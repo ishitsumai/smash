@@ -5,70 +5,666 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Smash Tracker</title>
     <style>
-        body{font-family:sans-serif;background:#111;color:#fff;max-width:700px;margin:auto;padding:20px}
-        .card{background:#222;padding:20px;border-radius:12px;margin-bottom:16px}
-        input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;font-size:16px}
-        button{background:#ff6b35;color:#fff;font-weight:bold;cursor:pointer}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .item{padding:10px;border-bottom:1px solid #444}
-        .small{font-size:12px;color:#aaa}
-        h1,h3{margin-top:0}
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #111 100%);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .user-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            background: #1a1d2e;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2a2d3e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+            border-bottom: 2px solid #ff6b35;
+            padding-bottom: 8px;
+        }
+
+        .card h3 {
+            margin: 12px 0 8px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #2a2d3e;
+            border-radius: 8px;
+            background: #0a0e27;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .button-group.full {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #ff5520;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2a2d3e;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3d4e;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #2a2d3e;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #aaa;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #ff6b35;
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-box .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-mini {
+            background: #0a0e27;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #ff6b35;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-mini .label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .stat-mini .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .item {
+            background: #0a0e27;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #ff6b35;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .item-matchup {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .item-result {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .item-result.win {
+            background: #4caf50;
+        }
+
+        .item-result.lose {
+            background: #d32f2f;
+        }
+
+        .item-datetime {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .item-memo {
+            font-size: 12px;
+            color: #bbb;
+            font-style: italic;
+            margin-bottom: 4px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .table thead {
+            background: #0a0e27;
+        }
+
+        .table th {
+            padding: 10px;
+            text-align: left;
+            font-size: 12px;
+            color: #aaa;
+            border-bottom: 2px solid #2a2d3e;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 10px;
+            border-bottom: 1px solid #2a2d3e;
+            font-size: 13px;
+        }
+
+        .table tbody tr:hover {
+            background: #0f1220;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .streak {
+            background: #1a2f1a;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin-bottom: 12px;
+        }
+
+        .streak.lose {
+            background: #2f1a1a;
+            border-left-color: #d32f2f;
+        }
+
+        .streak .label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .streak .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .winrate-bar {
+            width: 100%;
+            height: 24px;
+            background: #0a0e27;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .winrate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #ff4500 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #1a1d2e;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            .user-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 4px;
+            }
+
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .table {
+                font-size: 12px;
+            }
+
+            .table th, .table td {
+                padding: 6px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<h1>⚔ Smash Tracker</h1>
-
-<div class="card" id="authBox">
-    <h3>ログイン / 新規登録</h3>
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button type="button" onclick="signup()">新規登録</button>
-    <button type="button" onclick="login()">ログイン</button>
-</div>
-
-<div id="app" style="display:none">
-    <div class="card">
-        <div id="userInfo"></div>
-        <button type="button" onclick="logout()">ログアウト</button>
-    </div>
-    <div class="card">
-        <h3>試合記録</h3>
-        <input id="my" placeholder="自キャラ" value="ゲッコウガ">
-        <input id="enemy" placeholder="相手キャラ">
-        <textarea id="memo" placeholder="メモ"></textarea>
-        <div class="row">
-            <button type="button" onclick="saveMatch('win')">勝ち</button>
-            <button type="button" onclick="saveMatch('lose')">負け</button>
+<div class="container">
+    <div id="authSection">
+        <div class="card full">
+            <h2>⚔ Smash Tracker - ログイン</h2>
+            <div class="form-group">
+                <label>メールアドレス</label>
+                <input id="email" type="email" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>パスワード</label>
+                <input id="password" type="password" placeholder="パスワード">
+            </div>
+            <div class="button-group full">
+                <button class="btn-primary" onclick="signup()">新規登録</button>
+                <button class="btn-primary" onclick="login()">ログイン</button>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <h3>戦績</h3>
-        <div id="stats"></div>
-    </div>
-    <div class="card">
-        <h3>履歴</h3>
-        <div id="list"></div>
+
+    <div id="appSection" style="display:none">
+        <header>
+            <div class="user-section">
+                <h1>⚔ Smash Tracker</h1>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span class="user-info" id="userEmail"></span>
+                    <button class="btn-secondary btn-small" onclick="logout()">ログアウト</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 試合記録フォーム -->
+        <div class="grid">
+            <div class="card">
+                <h2>📝 試合記録</h2>
+                <div class="form-group">
+                    <label>自キャラ</label>
+                    <select id="myChar">
+                        <option value="">選択してください</option>
+                        <option value="ゲッコウガ">ゲッコウガ</option>
+                        <option value="シュルク">シュルク</option>
+                        <option value="リンク">リンク</option>
+                        <option value="ピカチュウ">ピカチュウ</option>
+                        <option value="マリオ">マリオ</option>
+                        <option value="ドンキーコング">ドンキーコング</option>
+                        <option value="ルキナ">ルキナ</option>
+                        <option value="ヨッシー">ヨッシー</option>
+                        <option value="カービィ">カービィ</option>
+                        <option value="フォックス">フォックス</option>
+                        <option value="ファルコン">ファルコン</option>
+                        <option value="クッパ">クッパ</option>
+                        <option value="パックマン">パックマン</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>相手キャラ</label>
+                    <input id="enemyChar" type="text" placeholder="相手のキャラを入力">
+                </div>
+                <div class="form-group">
+                    <label>コメント・対策メモ</label>
+                    <textarea id="memo" placeholder="この試合のメモや対策を記入"></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="saveMatch('win')">✓ 勝ち</button>
+                    <button class="btn-primary" onclick="saveMatch('lose')">✗ 負け</button>
+                </div>
+            </div>
+
+            <!-- 総合戦績 -->
+            <div class="card">
+                <h2>📊 総合戦績</h2>
+                <div id="overallStats"></div>
+            </div>
+        </div>
+
+        <!-- タブナビゲーション -->
+        <div class="card full">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('today')">📅 今日</button>
+                <button class="tab-btn" onclick="switchTab('weekly')">📈 今週</button>
+                <button class="tab-btn" onclick="switchTab('monthly')">📊 今月</button>
+                <button class="tab-btn" onclick="switchTab('analysis')">🔍 分析</button>
+                <button class="tab-btn" onclick="switchTab('history')">📜 履歴</button>
+            </div>
+
+            <!-- 今日のタブ -->
+            <div id="today" class="tab-content active">
+                <h2 style="margin-top: 0;">今日の戦績</h2>
+                <div id="todayStats"></div>
+            </div>
+
+            <!-- 今週のタブ -->
+            <div id="weekly" class="tab-content">
+                <h2 style="margin-top: 0;">今週の戦績</h2>
+                <div id="weeklyStats"></div>
+            </div>
+
+            <!-- 今月のタブ -->
+            <div id="monthly" class="tab-content">
+                <h2 style="margin-top: 0;">今月の戦績</h2>
+                <div id="monthlyStats"></div>
+                <h3>月別戦績一覧</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>年月</th>
+                            <th>勝</th>
+                            <th>敗</th>
+                            <th>勝率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyTable">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分析タブ -->
+            <div id="analysis" class="tab-content">
+                <h2 style="margin-top: 0;">📊 詳細分析</h2>
+
+                <h3>連勝・連敗</h3>
+                <div id="streakInfo"></div>
+
+                <h3>相手キャラ別総合勝率</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>相手キャラ</th>
+                            <th>戦数</th>
+                            <th>勝</th>
+                            <th>敗</th>
+                            <th>勝率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enemyCharTable">
+                    </tbody>
+                </table>
+
+                <h3>自キャラ別の相手キャラ勝率</h3>
+                <div id="charAnalysis"></div>
+
+                <h3>対策メモ一覧</h3>
+                <div id="strategyMemos"></div>
+            </div>
+
+            <!-- 履歴タブ -->
+            <div id="history" class="tab-content">
+                <h2 style="margin-top: 0;">試合履歴</h2>
+                <div id="historyList"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Supabaseライブラリはbodyの最後に配置 -->
+<!-- 削除確認モーダル -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h2>削除確認</h2>
+        <p>この試合記録を削除してもよろしいですか？</p>
+        <div class="button-group full">
+            <button class="btn-danger" onclick="confirmDelete()">削除する</button>
+            <button class="btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 定数の定義
+    // ===== グローバル変数 =====
     const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
     
     let supabaseClient;
     let user = null;
+    let allMatches = [];
+    let deleteTargetId = null;
 
-    // Supabaseクライアントの初期化（スクリプト読み込み後）
     try {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     } catch (e) {
         console.error("Supabase初期化エラー:", e);
     }
 
+    // ===== 認証関数 =====
     async function signup() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
@@ -81,7 +677,7 @@
             alert("登録エラー: " + error.message); 
             return; 
         }
-        alert("登録しました。メール確認設定がONの場合は、承認後にログインしてください。");
+        alert("登録しました。メール確認後にログインしてください。");
     }
 
     async function login() {
@@ -109,9 +705,9 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 user = session.user;
-                document.getElementById("authBox").style.display = "none";
-                document.getElementById("app").style.display = "block";
-                document.getElementById("userInfo").innerText = user.email;
+                document.getElementById("authSection").style.display = "none";
+                document.getElementById("appSection").style.display = "block";
+                document.getElementById("userEmail").innerText = user.email;
                 loadData();
             }
         } catch (e) {
@@ -119,55 +715,410 @@
         }
     }
 
+    // ===== データ操作 =====
     async function saveMatch(result) {
-        const my = document.getElementById("my").value.trim();
-        const enemy = document.getElementById("enemy").value.trim();
+        const myChar = document.getElementById("myChar").value.trim();
+        const enemyChar = document.getElementById("enemyChar").value.trim();
         const memo = document.getElementById("memo").value.trim();
-        if (!my || !enemy) { 
-            alert("自キャラと相手キャラを入力してください。"); 
+        if (!myChar || !enemyChar) { 
+            alert("自キャラと相手キャラを選択・入力してください。"); 
             return; 
         }
         const { error } = await supabaseClient.from("matches").insert({
             user_id: user.id,
-            my_char: my,
-            enemy_char: enemy,
+            my_char: myChar,
+            enemy_char: enemyChar,
             result: result,
-            memo: memo
+            memo: memo,
+            created_at: new Date().toISOString()
         });
         if (error) { 
             alert("保存エラー: " + error.message); 
             return; 
         }
         document.getElementById("memo").value = "";
+        document.getElementById("enemyChar").value = "";
+        document.getElementById("myChar").value = "";
         loadData();
     }
 
     async function loadData() {
         try {
-            const { data, error } = await supabaseClient.from("matches").select("*").order("created_at", { ascending: false });
+            const { data, error } = await supabaseClient
+                .from("matches")
+                .select("*")
+                .eq("user_id", user.id)
+                .order("created_at", { ascending: false });
+            
             if (error) { 
-                alert("データ読込エラー: " + error.message); 
+                console.error("データ読込エラー:", error);
                 return; 
             }
-            render(data || []);
+            allMatches = data || [];
+            render();
         } catch (e) {
             console.error("データ読込エラー:", e);
         }
     }
 
-    function render(rows) {
-        const win = rows.filter(x => x.result === "win").length;
-        const lose = rows.filter(x => x.result === "lose").length;
+    async function deleteMatch(id) {
+        deleteTargetId = id;
+        document.getElementById("deleteModal").classList.add("active");
+    }
+
+    async function confirmDelete() {
+        if (!deleteTargetId) return;
+        const { error } = await supabaseClient
+            .from("matches")
+            .delete()
+            .eq("id", deleteTargetId);
+        
+        if (error) {
+            alert("削除エラー: " + error.message);
+        } else {
+            loadData();
+        }
+        closeDeleteModal();
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("active");
+        deleteTargetId = null;
+    }
+
+    // ===== UI操作 =====
+    function switchTab(tabName) {
+        // タブボタンの更新
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // タブコンテンツの更新
+        document.querySelectorAll(".tab-content").forEach(tab => {
+            tab.classList.remove("active");
+        });
+        document.getElementById(tabName).classList.add("active");
+    }
+
+    // ===== データ解析と表示 =====
+    function render() {
+        renderOverallStats();
+        renderTodayStats();
+        renderWeeklyStats();
+        renderMonthlyStats();
+        renderAnalysis();
+        renderHistory();
+    }
+
+    function renderOverallStats() {
+        const win = allMatches.filter(x => x.result === "win").length;
+        const lose = allMatches.filter(x => x.result === "lose").length;
         const rate = (win + lose) ? ((win / (win + lose)) * 100).toFixed(1) : "0.0";
-        document.getElementById("stats").innerHTML = `${win}勝 ${lose}敗 勝率 ${rate}%`;
-        document.getElementById("list").innerHTML = rows.map(r => `
-            <div class="item">
-                <div>${escapeHtml(r.my_char)} vs ${escapeHtml(r.enemy_char)}</div>
-                <div>${r.result === "win" ? "勝ち" : "負け"}</div>
-                <div class="small">${new Date(r.created_at).toLocaleString('ja-JP')}</div>
-                <div class="small">${escapeHtml(r.memo || "")}</div>
+        
+        const streak = getStreak();
+        
+        let html = `
+            <div class="stat-box">
+                <div class="value">${win}勝 ${lose}敗</div>
+                <div class="label">勝率: ${rate}%</div>
             </div>
-        `).join("");
+            <div class="stat-mini">
+                <div class="label">総試合数</div>
+                <div class="value">${win + lose}</div>
+            </div>
+        `;
+
+        if (streak.count > 0) {
+            html += `
+                <div class="stat-mini">
+                    <div class="label">現在の連勝</div>
+                    <div class="value">${streak.count}</div>
+                </div>
+            `;
+        } else if (streak.count < 0) {
+            html += `
+                <div class="stat-mini">
+                    <div class="label">現在の連敗</div>
+                    <div class="value">${Math.abs(streak.count)}</div>
+                </div>
+            `;
+        }
+
+        document.getElementById("overallStats").innerHTML = html;
+    }
+
+    function renderTodayStats() {
+        const today = new Date().toDateString();
+        const todayMatches = allMatches.filter(m => 
+            new Date(m.created_at).toDateString() === today
+        );
+        
+        if (todayMatches.length === 0) {
+            document.getElementById("todayStats").innerHTML = '<div class="no-data">今日はまだ試合がありません</div>';
+            return;
+        }
+
+        const win = todayMatches.filter(x => x.result === "win").length;
+        const lose = todayMatches.filter(x => x.result === "lose").length;
+        const rate = ((win / (win + lose)) * 100).toFixed(1);
+
+        let html = `
+            <div class="stat-box">
+                <div class="value">${win}勝 ${lose}敗</div>
+                <div class="label">勝率: ${rate}%</div>
+            </div>
+        `;
+
+        todayMatches.forEach(m => {
+            html += renderMatchItem(m);
+        });
+
+        document.getElementById("todayStats").innerHTML = html;
+    }
+
+    function renderWeeklyStats() {
+        const weekMatches = getWeekMatches();
+        
+        if (weekMatches.length === 0) {
+            document.getElementById("weeklyStats").innerHTML = '<div class="no-data">今週はまだ試合がありません</div>';
+            return;
+        }
+
+        const win = weekMatches.filter(x => x.result === "win").length;
+        const lose = weekMatches.filter(x => x.result === "lose").length;
+        const rate = ((win / (win + lose)) * 100).toFixed(1);
+
+        let html = `
+            <div class="stat-box">
+                <div class="value">${win}勝 ${lose}敗</div>
+                <div class="label">勝率: ${rate}%</div>
+            </div>
+        `;
+
+        weekMatches.forEach(m => {
+            html += renderMatchItem(m);
+        });
+
+        document.getElementById("weeklyStats").innerHTML = html;
+    }
+
+    function renderMonthlyStats() {
+        const monthMatches = getMonthMatches();
+        
+        if (monthMatches.length === 0) {
+            document.getElementById("monthlyStats").innerHTML = '<div class="no-data">今月はまだ試合がありません</div>';
+            return;
+        }
+
+        const win = monthMatches.filter(x => x.result === "win").length;
+        const lose = monthMatches.filter(x => x.result === "lose").length;
+        const rate = ((win / (win + lose)) * 100).toFixed(1);
+
+        let html = `
+            <div class="stat-box">
+                <div class="value">${win}勝 ${lose}敗</div>
+                <div class="label">勝率: ${rate}%</div>
+            </div>
+        `;
+
+        monthMatches.forEach(m => {
+            html += renderMatchItem(m);
+        });
+
+        document.getElementById("monthlyStats").innerHTML = html;
+
+        // 月別一覧
+        const monthStats = {};
+        allMatches.forEach(m => {
+            const date = new Date(m.created_at);
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthStats[key]) {
+                monthStats[key] = { win: 0, lose: 0 };
+            }
+            if (m.result === "win") monthStats[key].win++;
+            else monthStats[key].lose++;
+        });
+
+        let tableHtml = '';
+        Object.keys(monthStats).sort().reverse().forEach(month => {
+            const stats = monthStats[month];
+            const rate = ((stats.win / (stats.win + stats.lose)) * 100).toFixed(1);
+            tableHtml += `
+                <tr>
+                    <td>${month}</td>
+                    <td>${stats.win}</td>
+                    <td>${stats.lose}</td>
+                    <td>${rate}%</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("monthlyTable").innerHTML = tableHtml || '<tr><td colspan="4" class="no-data">データなし</td></tr>';
+    }
+
+    function renderAnalysis() {
+        // 連勝・連敗
+        const streak = getStreak();
+        let streakHtml = '';
+        if (streak.count > 0) {
+            streakHtml += `
+                <div class="streak">
+                    <div class="label">現在の連勝</div>
+                    <div class="value">${streak.count}</div>
+                </div>
+            `;
+        } else if (streak.count < 0) {
+            streakHtml += `
+                <div class="streak lose">
+                    <div class="label">現在の連敗</div>
+                    <div class="value">${Math.abs(streak.count)}</div>
+                </div>
+            `;
+        }
+        document.getElementById("streakInfo").innerHTML = streakHtml || '<div class="no-data">試合記録がありません</div>';
+
+        // 相手キャラ別勝率
+        const enemyStats = {};
+        allMatches.forEach(m => {
+            if (!enemyStats[m.enemy_char]) {
+                enemyStats[m.enemy_char] = { win: 0, lose: 0 };
+            }
+            if (m.result === "win") enemyStats[m.enemy_char].win++;
+            else enemyStats[m.enemy_char].lose++;
+        });
+
+        let enemyHtml = '';
+        Object.keys(enemyStats).sort().forEach(char => {
+            const stats = enemyStats[char];
+            const total = stats.win + stats.lose;
+            const rate = ((stats.win / total) * 100).toFixed(1);
+            const barWidth = rate;
+            enemyHtml += `
+                <tr>
+                    <td>${escapeHtml(char)}</td>
+                    <td>${total}</td>
+                    <td>${stats.win}</td>
+                    <td>${stats.lose}</td>
+                    <td>
+                        <div class="winrate-bar">
+                            <div class="winrate-fill" style="width: ${barWidth}%">${rate}%</div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        document.getElementById("enemyCharTable").innerHTML = enemyHtml || '<tr><td colspan="5" class="no-data">データなし</td></tr>';
+
+        // 自キャラ別分析
+        const charAnalysis = {};
+        allMatches.forEach(m => {
+            const key = `${m.my_char} vs ${m.enemy_char}`;
+            if (!charAnalysis[key]) {
+                charAnalysis[key] = { win: 0, lose: 0 };
+            }
+            if (m.result === "win") charAnalysis[key].win++;
+            else charAnalysis[key].lose++;
+        });
+
+        let charHtml = '';
+        Object.keys(charAnalysis).sort().forEach(key => {
+            const stats = charAnalysis[key];
+            const total = stats.win + stats.lose;
+            const rate = ((stats.win / total) * 100).toFixed(1);
+            if (total >= 2) { // 2戦以上のみ表示
+                charHtml += `
+                    <div class="stat-mini">
+                        <div class="label">${escapeHtml(key)}</div>
+                        <div class="value">${stats.win}-${stats.lose} (${rate}%)</div>
+                    </div>
+                `;
+            }
+        });
+        document.getElementById("charAnalysis").innerHTML = charHtml || '<div class="no-data">対戦データが不足しています</div>';
+
+        // 対策メモ一覧
+        const memos = allMatches.filter(m => m.memo && m.memo.trim());
+        let memoHtml = '';
+        memos.forEach(m => {
+            memoHtml += `
+                <div class="stat-mini">
+                    <div class="label">${escapeHtml(m.my_char)} vs ${escapeHtml(m.enemy_char)}</div>
+                    <div style="font-size: 12px; color: #bbb;">${escapeHtml(m.memo)}</div>
+                </div>
+            `;
+        });
+        document.getElementById("strategyMemos").innerHTML = memoHtml || '<div class="no-data">対策メモがありません</div>';
+    }
+
+    function renderHistory() {
+        if (allMatches.length === 0) {
+            document.getElementById("historyList").innerHTML = '<div class="no-data">試合記録がありません</div>';
+            return;
+        }
+
+        let html = '';
+        allMatches.forEach(m => {
+            html += renderMatchItem(m, true);
+        });
+        document.getElementById("historyList").innerHTML = html;
+    }
+
+    function renderMatchItem(match, withDelete = false) {
+        const dateTime = new Date(match.created_at).toLocaleString('ja-JP');
+        let html = `
+            <div class="item">
+                <div class="item-content">
+                    <div class="item-header">
+                        <span class="item-matchup">${escapeHtml(match.my_char)} vs ${escapeHtml(match.enemy_char)}</span>
+                        <span class="item-result ${match.result}">${match.result === "win" ? "勝ち" : "負け"}</span>
+                    </div>
+                    <div class="item-datetime">${dateTime}</div>
+        `;
+        if (match.memo) {
+            html += `<div class="item-memo">"${escapeHtml(match.memo)}"</div>`;
+        }
+        html += `</div>`;
+        
+        if (withDelete) {
+            html += `
+                <div class="item-actions">
+                    <button class="btn-danger" onclick="deleteMatch(${match.id})">削除</button>
+                </div>
+            `;
+        }
+        
+        html += `</div>`;
+        return html;
+    }
+
+    // ===== ヘルパー関数 =====
+    function getStreak() {
+        if (allMatches.length === 0) return { count: 0 };
+        
+        let count = 0;
+        const lastResult = allMatches[0].result;
+        
+        for (let match of allMatches) {
+            if (match.result === lastResult) {
+                count += lastResult === "win" ? 1 : -1;
+            } else {
+                break;
+            }
+        }
+        return { count };
+    }
+
+    function getWeekMatches() {
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return allMatches.filter(m => new Date(m.created_at) > weekAgo);
+    }
+
+    function getMonthMatches() {
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        return allMatches.filter(m => new Date(m.created_at) >= monthStart);
     }
 
     function escapeHtml(str) {
@@ -175,7 +1126,7 @@
         return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
-    // ページ読み込み完了後に実行
+    // 初期化
     checkUser();
 </script>
 
