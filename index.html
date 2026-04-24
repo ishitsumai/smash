@@ -13,6 +13,7 @@ button{background:#ff6b35;color:#fff;font-weight:bold;cursor:pointer}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .item{padding:10px;border-bottom:1px solid #444}
 .small{font-size:12px;color:#aaa}
+h1,h3{margin-top:0}
 </style>
 </head>
 <body>
@@ -20,135 +21,181 @@ button{background:#ff6b35;color:#fff;font-weight:bold;cursor:pointer}
 <h1>⚔ Smash Tracker</h1>
 
 <div class="card" id="authBox">
-<h3>ログイン / 新規登録</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signup()">新規登録</button>
-<button onclick="login()">ログイン</button>
+  <h3>ログイン / 新規登録</h3>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="signup()">新規登録</button>
+  <button onclick="login()">ログイン</button>
 </div>
 
 <div id="app" style="display:none">
 
-<div class="card">
-<div id="userInfo"></div>
-<button onclick="logout()">ログアウト</button>
-</div>
+  <div class="card">
+    <div id="userInfo"></div>
+    <button onclick="logout()">ログアウト</button>
+  </div>
 
-<div class="card">
-<h3>試合記録</h3>
-<input id="my" placeholder="自キャラ">
-<input id="enemy" placeholder="相手キャラ">
-<textarea id="memo" placeholder="メモ"></textarea>
-<div class="row">
-<button onclick="saveMatch('win')">勝ち</button>
-<button onclick="saveMatch('lose')">負け</button>
-</div>
-</div>
+  <div class="card">
+    <h3>試合記録</h3>
+    <input id="my" placeholder="自キャラ">
+    <input id="enemy" placeholder="相手キャラ">
+    <textarea id="memo" placeholder="メモ"></textarea>
 
-<div class="card">
-<h3>戦績</h3>
-<div id="stats"></div>
-</div>
+    <div class="row">
+      <button onclick="saveMatch('win')">勝ち</button>
+      <button onclick="saveMatch('lose')">負け</button>
+    </div>
+  </div>
 
-<div class="card">
-<h3>履歴</h3>
-<div id="list"></div>
-</div>
+  <div class="card">
+    <h3>戦績</h3>
+    <div id="stats"></div>
+  </div>
+
+  <div class="card">
+    <h3>履歴</h3>
+    <div id="list"></div>
+  </div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
-const SUPABASE_KEY = "ここにあなたのanon key";
 
-const supabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
 
-let user=null;
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let user = null;
 
 async function signup(){
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-const {error}=await supabase.auth.signUp({email,password});
-if(error){alert(error.message);return;}
-alert("登録成功。ログインしてください。");
+  const { error } = await supabase.auth.signUp({
+    email,
+    password
+  });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert("登録しました。確認メールが来た場合は承認後ログインしてください。");
 }
 
 async function login(){
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-const {error}=await supabase.auth.signInWithPassword({email,password});
-if(error){alert(error.message);return;}
-location.reload();
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  location.reload();
 }
 
 async function logout(){
-await supabase.auth.signOut();
-location.reload();
+  await supabase.auth.signOut();
+  location.reload();
 }
 
 async function checkUser(){
-const {data:{session}}=await supabase.auth.getSession();
+  const { data:{ session } } = await supabase.auth.getSession();
 
-if(session){
-user=session.user;
-document.getElementById("authBox").style.display="none";
-document.getElementById("app").style.display="block";
-document.getElementById("userInfo").innerText=user.email;
-loadData();
-}
+  if(session){
+    user = session.user;
+    document.getElementById("authBox").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    document.getElementById("userInfo").innerText = user.email;
+    loadData();
+  }
 }
 
 async function saveMatch(result){
-const my=document.getElementById("my").value.trim();
-const enemy=document.getElementById("enemy").value.trim();
-const memo=document.getElementById("memo").value.trim();
+  const my = document.getElementById("my").value.trim();
+  const enemy = document.getElementById("enemy").value.trim();
+  const memo = document.getElementById("memo").value.trim();
 
-if(!my||!enemy){alert("入力してください");return;}
+  if(!my || !enemy){
+    alert("自キャラと相手キャラを入力してください。");
+    return;
+  }
 
-await supabase.from("matches").insert({
-user_id:user.id,
-my_char:my,
-enemy_char:enemy,
-result:result,
-memo:memo
-});
+  const { error } = await supabase
+    .from("matches")
+    .insert({
+      user_id: user.id,
+      my_char: my,
+      enemy_char: enemy,
+      result: result,
+      memo: memo
+    });
 
-document.getElementById("memo").value="";
-loadData();
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  document.getElementById("memo").value = "";
+  loadData();
 }
 
 async function loadData(){
-const {data}=await supabase
-.from("matches")
-.select("*")
-.order("created_at",{ascending:false});
+  const { data, error } = await supabase
+    .from("matches")
+    .select("*")
+    .order("created_at", { ascending:false });
 
-render(data||[]);
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  render(data || []);
 }
 
 function render(rows){
-let win=rows.filter(x=>x.result==="win").length;
-let lose=rows.filter(x=>x.result==="lose").length;
+  const win = rows.filter(x => x.result === "win").length;
+  const lose = rows.filter(x => x.result === "lose").length;
+  const rate = (win + lose)
+    ? ((win / (win + lose)) * 100).toFixed(1)
+    : "0.0";
 
-document.getElementById("stats").innerHTML=
-`${win}勝 ${lose}敗 勝率 ${(win+lose)?((win/(win+lose))*100).toFixed(1):0}%`;
+  document.getElementById("stats").innerHTML =
+    `${win}勝 ${lose}敗 勝率 ${rate}%`;
 
-document.getElementById("list").innerHTML=
-rows.map(r=>`
-<div class="item">
-<div>${r.my_char} vs ${r.enemy_char}</div>
-<div>${r.result==="win"?"勝ち":"負け"}</div>
-<div class="small">${r.created_at}</div>
-<div class="small">${r.memo||""}</div>
-</div>
-`).join("");
+  document.getElementById("list").innerHTML =
+    rows.map(r => `
+      <div class="item">
+        <div>${escapeHtml(r.my_char)} vs ${escapeHtml(r.enemy_char)}</div>
+        <div>${r.result === "win" ? "勝ち" : "負け"}</div>
+        <div class="small">${r.created_at}</div>
+        <div class="small">${escapeHtml(r.memo || "")}</div>
+      </div>
+    `).join("");
+}
+
+function escapeHtml(str){
+  return str
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
 }
 
 checkUser();
 </script>
+
 </body>
 </html>
 ```
