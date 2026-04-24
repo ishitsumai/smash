@@ -3,396 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Smash Tracker</title>
+    <title>Smash Tracker Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
         * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #111 100%);
-            color: #fff;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px;
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #ff5722;
+            --secondary: #4ecdc4;
+            --accent: #ffe66d;
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b8c1;
+            --border: #2d3748;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a2332 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
         }
 
         header {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 24px 20px;
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         header h1 {
-            margin: 0;
             font-size: 28px;
-        }
-
-        .user-section {
+            font-weight: 800;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
-        .user-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
         }
 
-        .grid {
+        .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .grid.full {
-            grid-template-columns: 1fr;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
         .card {
-            background: #1a1d2e;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #2a2d3e;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card h2 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            font-size: 18px;
-            border-bottom: 2px solid #ff6b35;
-            padding-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .card h3 {
-            margin: 12px 0 8px 0;
-            font-size: 14px;
-            color: #aaa;
+            font-size: 16px;
+            margin: 16px 0 12px;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
-        .form-group label {
+        label {
             display: block;
             font-size: 12px;
-            color: #aaa;
-            margin-bottom: 4px;
-            font-weight: 500;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        input, textarea, select {
+        select, input, textarea {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
-            border: 1px solid #2a2d3e;
-            border-radius: 8px;
-            background: #0a0e27;
-            color: #fff;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
             font-size: 14px;
             font-family: inherit;
+            transition: all 0.3s ease;
         }
 
-        input:focus, textarea:focus, select:focus {
+        select:focus, input:focus, textarea:focus {
             outline: none;
-            border-color: #ff6b35;
-            box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.05);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
         }
 
         textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
         }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .button-group.full {
-            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 16px;
         }
 
         button {
-            padding: 12px;
+            padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 14px;
-            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: inherit;
         }
 
-        .btn-primary {
-            background: #ff6b35;
-            color: #fff;
+        button:active {
+            transform: scale(0.98);
         }
 
-        .btn-primary:hover {
-            background: #ff5520;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        .btn-win {
+            background: linear-gradient(135deg, var(--success) 0%, #27ae60 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-win:hover {
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-lose {
+            background: linear-gradient(135deg, var(--danger) 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-lose:hover {
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
 
         .btn-secondary {
-            background: #2a2d3e;
-            color: #fff;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--primary);
+            padding: 8px 12px;
+            font-size: 12px;
         }
 
         .btn-secondary:hover {
-            background: #3a3d4e;
+            background: rgba(255, 107, 53, 0.3);
         }
 
         .btn-danger {
-            background: #d32f2f;
-            color: #fff;
-            font-size: 12px;
-            padding: 6px;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
-
-        .btn-small {
+            background: var(--danger);
+            color: white;
             padding: 6px 10px;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #2a2d3e;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
             overflow-x: auto;
-            flex-wrap: wrap;
+            padding-bottom: 12px;
         }
 
-        .tab-btn {
+        .tab {
             padding: 10px 16px;
             background: transparent;
             border: none;
-            border-bottom: 3px solid transparent;
-            color: #aaa;
+            color: var(--text-secondary);
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 13px;
             white-space: nowrap;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
         }
 
-        .tab-btn.active {
-            border-bottom-color: #ff6b35;
-            color: #fff;
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
-        .tab-btn:hover {
-            color: #fff;
-        }
-
-        .tab-content {
+        .panel {
             display: none;
         }
 
-        .tab-content.active {
+        .panel.active {
             display: block;
         }
 
-        .stat-box {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
             padding: 16px;
-            border-radius: 8px;
             text-align: center;
-            margin-bottom: 12px;
         }
 
-        .stat-box .value {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .stat-box .label {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .stat-mini {
-            background: #0a0e27;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #ff6b35;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-mini .label {
-            font-size: 12px;
-            color: #aaa;
-        }
-
-        .stat-mini .value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff6b35;
-        }
-
-        .item {
-            background: #0a0e27;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #ff6b35;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .item-content {
-            flex: 1;
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .item-matchup {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .item-result {
-            padding: 2px 8px;
-            border-radius: 4px;
+        .stat-label {
             font-size: 11px;
-            font-weight: bold;
-        }
-
-        .item-result.win {
-            background: #4caf50;
-        }
-
-        .item-result.lose {
-            background: #d32f2f;
-        }
-
-        .item-datetime {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 4px;
-        }
-
-        .item-memo {
-            font-size: 12px;
-            color: #bbb;
-            font-style: italic;
-            margin-bottom: 4px;
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-
-        .table thead {
-            background: #0a0e27;
-        }
-
-        .table th {
-            padding: 10px;
-            text-align: left;
-            font-size: 12px;
-            color: #aaa;
-            border-bottom: 2px solid #2a2d3e;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
-        .table td {
-            padding: 10px;
-            border-bottom: 1px solid #2a2d3e;
-            font-size: 13px;
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
         }
 
-        .table tbody tr:hover {
-            background: #0f1220;
+        .stat-value.winrate {
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .no-data {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 14px;
+        .monthly-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .streak {
-            background: #1a2f1a;
+        .monthly-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             padding: 12px;
-            border-radius: 8px;
-            border-left: 4px solid #4caf50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .monthly-item:hover {
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .monthly-period {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .monthly-stats {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            height: 300px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
             margin-bottom: 12px;
         }
 
-        .streak.lose {
-            background: #2f1a1a;
-            border-left-color: #d32f2f;
+        .char-input-group {
+            display: flex;
+            gap: 8px;
         }
 
-        .streak .label {
+        .char-input-group input {
+            flex: 1;
+        }
+
+        .char-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .char-tag {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            color: #aaa;
-            margin-bottom: 4px;
-        }
-
-        .streak .value {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .winrate-bar {
-            width: 100%;
-            height: 24px;
-            background: #0a0e27;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .winrate-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff6b35 0%, #ff4500 100%);
+            font-weight: 600;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            transition: width 0.3s;
+            gap: 6px;
+        }
+
+        .char-tag button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
         }
 
         .modal {
@@ -404,7 +362,6 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            animation: fadeIn 0.3s;
         }
 
         .modal.active {
@@ -413,18 +370,14 @@
             justify-content: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .modal-content {
-            background: #1a1d2e;
-            padding: 20px;
-            border-radius: 12px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
             max-width: 400px;
             width: 90%;
-            animation: slideIn 0.3s;
+            border: 1px solid var(--border);
+            animation: slideIn 0.3s ease-out;
         }
 
         @keyframes slideIn {
@@ -438,53 +391,49 @@
             }
         }
 
+        .user-info {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 8px;
+            .grid-2 {
+                grid-template-columns: 1fr;
             }
 
-            .grid {
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
 
             header h1 {
-                font-size: 24px;
-            }
-
-            .user-section {
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 8px;
             }
 
             .button-group {
                 grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                gap: 4px;
-            }
-
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .table {
-                font-size: 12px;
-            }
-
-            .table th, .table td {
-                padding: 6px;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="authSection">
-        <div class="card full">
-            <h2>⚔ Smash Tracker - ログイン</h2>
+<header>
+    <h1>
+        <span>⚔ Smash Tracker Pro</span>
+        <div class="user-info">
+            <span id="userEmail"></span>
+            <button class="btn-secondary" onclick="logout()">ログアウト</button>
+        </div>
+    </h1>
+</header>
+
+<div id="authSection">
+    <div class="container">
+        <div class="card" style="max-width: 400px; margin: 100px auto;">
+            <h2>ログイン / 新規登録</h2>
             <div class="form-group">
                 <label>メールアドレス</label>
                 <input id="email" type="email" placeholder="your@email.com">
@@ -493,156 +442,134 @@
                 <label>パスワード</label>
                 <input id="password" type="password" placeholder="パスワード">
             </div>
-            <div class="button-group full">
-                <button class="btn-primary" onclick="signup()">新規登録</button>
-                <button class="btn-primary" onclick="login()">ログイン</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="appSection" style="display:none">
-        <header>
-            <div class="user-section">
-                <h1>⚔ Smash Tracker</h1>
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <span class="user-info" id="userEmail"></span>
-                    <button class="btn-secondary btn-small" onclick="logout()">ログアウト</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- 試合記録フォーム -->
-        <div class="grid">
-            <div class="card">
-                <h2>📝 試合記録</h2>
-                <div class="form-group">
-                    <label>自キャラ</label>
-                    <select id="myChar">
-                        <option value="">選択してください</option>
-                        <option value="ゲッコウガ">ゲッコウガ</option>
-                        <option value="シュルク">シュルク</option>
-                        <option value="リンク">リンク</option>
-                        <option value="ピカチュウ">ピカチュウ</option>
-                        <option value="マリオ">マリオ</option>
-                        <option value="ドンキーコング">ドンキーコング</option>
-                        <option value="ルキナ">ルキナ</option>
-                        <option value="ヨッシー">ヨッシー</option>
-                        <option value="カービィ">カービィ</option>
-                        <option value="フォックス">フォックス</option>
-                        <option value="ファルコン">ファルコン</option>
-                        <option value="クッパ">クッパ</option>
-                        <option value="パックマン">パックマン</option>
-                        <option value="その他">その他</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>相手キャラ</label>
-                    <input id="enemyChar" type="text" placeholder="相手のキャラを入力">
-                </div>
-                <div class="form-group">
-                    <label>コメント・対策メモ</label>
-                    <textarea id="memo" placeholder="この試合のメモや対策を記入"></textarea>
-                </div>
-                <div class="button-group">
-                    <button class="btn-primary" onclick="saveMatch('win')">✓ 勝ち</button>
-                    <button class="btn-primary" onclick="saveMatch('lose')">✗ 負け</button>
-                </div>
-            </div>
-
-            <!-- 総合戦績 -->
-            <div class="card">
-                <h2>📊 総合戦績</h2>
-                <div id="overallStats"></div>
-            </div>
-        </div>
-
-        <!-- タブナビゲーション -->
-        <div class="card full">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('today')">📅 今日</button>
-                <button class="tab-btn" onclick="switchTab('weekly')">📈 今週</button>
-                <button class="tab-btn" onclick="switchTab('monthly')">📊 今月</button>
-                <button class="tab-btn" onclick="switchTab('analysis')">🔍 分析</button>
-                <button class="tab-btn" onclick="switchTab('history')">📜 履歴</button>
-            </div>
-
-            <!-- 今日のタブ -->
-            <div id="today" class="tab-content active">
-                <h2 style="margin-top: 0;">今日の戦績</h2>
-                <div id="todayStats"></div>
-            </div>
-
-            <!-- 今週のタブ -->
-            <div id="weekly" class="tab-content">
-                <h2 style="margin-top: 0;">今週の戦績</h2>
-                <div id="weeklyStats"></div>
-            </div>
-
-            <!-- 今月のタブ -->
-            <div id="monthly" class="tab-content">
-                <h2 style="margin-top: 0;">今月の戦績</h2>
-                <div id="monthlyStats"></div>
-                <h3>月別戦績一覧</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>年月</th>
-                            <th>勝</th>
-                            <th>敗</th>
-                            <th>勝率</th>
-                        </tr>
-                    </thead>
-                    <tbody id="monthlyTable">
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 分析タブ -->
-            <div id="analysis" class="tab-content">
-                <h2 style="margin-top: 0;">📊 詳細分析</h2>
-
-                <h3>連勝・連敗</h3>
-                <div id="streakInfo"></div>
-
-                <h3>相手キャラ別総合勝率</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>相手キャラ</th>
-                            <th>戦数</th>
-                            <th>勝</th>
-                            <th>敗</th>
-                            <th>勝率</th>
-                        </tr>
-                    </thead>
-                    <tbody id="enemyCharTable">
-                    </tbody>
-                </table>
-
-                <h3>自キャラ別の相手キャラ勝率</h3>
-                <div id="charAnalysis"></div>
-
-                <h3>対策メモ一覧</h3>
-                <div id="strategyMemos"></div>
-            </div>
-
-            <!-- 履歴タブ -->
-            <div id="history" class="tab-content">
-                <h2 style="margin-top: 0;">試合履歴</h2>
-                <div id="historyList"></div>
+            <div class="button-group">
+                <button class="btn-win" onclick="signup()">新規登録</button>
+                <button class="btn-win" onclick="login()">ログイン</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 削除確認モーダル -->
-<div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <h2>削除確認</h2>
-        <p>この試合記録を削除してもよろしいですか？</p>
-        <div class="button-group full">
-            <button class="btn-danger" onclick="confirmDelete()">削除する</button>
-            <button class="btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+<div id="appSection" style="display:none">
+    <div class="container">
+        <div class="grid-2">
+            <!-- 左側：試合記録フォーム -->
+            <div class="card">
+                <h2>📝 試合記録</h2>
+
+                <div class="form-group">
+                    <label>自キャラ</label>
+                    <select id="myChar">
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>相手キャラ</label>
+                    <select id="enemyChar">
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>コメント・対策メモ</label>
+                    <textarea id="memo" placeholder="この試合のメモや対策を記入"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-win" onclick="saveMatch('win')">✓ 勝ち</button>
+                    <button class="btn-lose" onclick="saveMatch('lose')">✗ 負け</button>
+                </div>
+
+                <h3 style="margin-top: 24px;">キャラクター管理</h3>
+                <div class="char-input-group">
+                    <input id="newCharInput" type="text" placeholder="新しいキャラを追加">
+                    <button class="btn-secondary" onclick="addCharacter()">追加</button>
+                </div>
+                <div class="char-list" id="charList"></div>
+            </div>
+
+            <!-- 右側：統計情報 -->
+            <div class="card">
+                <h2>📊 総合統計</h2>
+                <div class="stats-grid" id="overallStats"></div>
+            </div>
+        </div>
+
+        <!-- タブセクション -->
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('overview')">📈 概要</button>
+                <button class="tab" onclick="switchTab('winrate')">📊 勝率グラフ</button>
+                <button class="tab" onclick="switchTab('matchups')">⚔️ 相手相性</button>
+                <button class="tab" onclick="switchTab('analysis')">🔍 詳細分析</button>
+                <button class="tab" onclick="switchTab('history')">📜 履歴</button>
+            </div>
+
+            <!-- 概要パネル -->
+            <div id="overview" class="panel active">
+                <h2>本日・直近の成績</h2>
+                <div class="stats-grid" id="todayStats"></div>
+                
+                <h3 style="margin-top: 24px;">現在のストリーク</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">連勝</div>
+                        <div class="stat-value" id="winStreak">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">連敗</div>
+                        <div class="stat-value" id="loseStreak">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 勝率グラフパネル -->
+            <div id="winrate" class="panel">
+                <h2>勝率推移</h2>
+                <div class="chart-container">
+                    <canvas id="winrateChart"></canvas>
+                </div>
+
+                <h3>相手キャラ別勝率</h3>
+                <div class="chart-container">
+                    <canvas id="matchupChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 相手相性パネル -->
+            <div id="matchups" class="panel">
+                <h2>相手別分析</h2>
+                <div class="form-group">
+                    <label>相手キャラ</label>
+                    <select id="analysisEnemySelect">
+                        <option value="">すべての相手</option>
+                    </select>
+                </div>
+                <div id="matchupsContent"></div>
+            </div>
+
+            <!-- 詳細分析パネル -->
+            <div id="analysis" class="panel">
+                <h2>自キャラ別分析</h2>
+                <div class="form-group">
+                    <label>自キャラ</label>
+                    <select id="analysisMySelect">
+                        <option value="">すべてのキャラ</option>
+                    </select>
+                </div>
+                <div id="analysisContent"></div>
+            </div>
+
+            <!-- 履歴パネル -->
+            <div id="history" class="panel">
+                <h2>試合履歴</h2>
+                <div class="form-group">
+                    <label>検索</label>
+                    <input id="searchFilter" type="text" placeholder="キャラ名やメモで検索">
+                </div>
+                <div id="historyList"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -656,7 +583,11 @@
     let supabaseClient;
     let user = null;
     let allMatches = [];
-    let deleteTargetId = null;
+    let characters = [
+        'ゲッコウガ', 'シュルク', 'リンク', 'ピカチュウ', 'マリオ',
+        'ドンキーコング', 'ルキナ', 'ヨッシー', 'カービィ', 'フォックス'
+    ];
+    let charts = {};
 
     try {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -664,7 +595,7 @@
         console.error("Supabase初期化エラー:", e);
     }
 
-    // ===== 認証関数 =====
+    // ===== 認証 =====
     async function signup() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
@@ -708,6 +639,7 @@
                 document.getElementById("authSection").style.display = "none";
                 document.getElementById("appSection").style.display = "block";
                 document.getElementById("userEmail").innerText = user.email;
+                loadCharacters();
                 loadData();
             }
         } catch (e) {
@@ -715,31 +647,115 @@
         }
     }
 
+    // ===== キャラクター管理 =====
+    async function loadCharacters() {
+        try {
+            const { data } = await supabaseClient
+                .from("user_characters")
+                .select("name")
+                .eq("user_id", user.id);
+            
+            if (data && data.length > 0) {
+                characters = data.map(c => c.name);
+            }
+            renderCharacters();
+        } catch (e) {
+            console.error("キャラ読み込みエラー:", e);
+        }
+    }
+
+    async function addCharacter() {
+        const input = document.getElementById("newCharInput");
+        const name = input.value.trim();
+        
+        if (!name) {
+            alert("キャラ名を入力してください。");
+            return;
+        }
+
+        if (characters.includes(name)) {
+            alert("既に登録されているキャラです。");
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from("user_characters")
+                .insert({
+                    user_id: user.id,
+                    name: name
+                });
+
+            if (error) {
+                alert("追加エラー: " + error.message);
+                return;
+            }
+
+            characters.push(name);
+            input.value = "";
+            renderCharacters();
+            updateSelectOptions();
+        } catch (e) {
+            console.error("キャラ追加エラー:", e);
+        }
+    }
+
+    function renderCharacters() {
+        const html = characters.map(char => `
+            <div class="char-tag">
+                ${char}
+            </div>
+        `).join('');
+        document.getElementById("charList").innerHTML = html;
+    }
+
+    function updateSelectOptions() {
+        const mySelect = document.getElementById("myChar");
+        const enemySelect = document.getElementById("enemyChar");
+        const analysisMySelect = document.getElementById("analysisMySelect");
+        const analysisEnemySelect = document.getElementById("analysisEnemySelect");
+
+        const options = characters.map(c => `<option value="${c}">${c}</option>`).join('');
+        
+        mySelect.innerHTML = '<option value="">選択してください</option>' + options;
+        enemySelect.innerHTML = '<option value="">選択してください</option>' + options;
+        analysisMySelect.innerHTML = '<option value="">すべてのキャラ</option>' + options;
+        analysisEnemySelect.innerHTML = '<option value="">すべての相手</option>' + options;
+    }
+
     // ===== データ操作 =====
     async function saveMatch(result) {
         const myChar = document.getElementById("myChar").value.trim();
         const enemyChar = document.getElementById("enemyChar").value.trim();
         const memo = document.getElementById("memo").value.trim();
+        
         if (!myChar || !enemyChar) { 
-            alert("自キャラと相手キャラを選択・入力してください。"); 
+            alert("自キャラと相手キャラを選択してください。"); 
             return; 
         }
-        const { error } = await supabaseClient.from("matches").insert({
-            user_id: user.id,
-            my_char: myChar,
-            enemy_char: enemyChar,
-            result: result,
-            memo: memo,
-            created_at: new Date().toISOString()
-        });
-        if (error) { 
-            alert("保存エラー: " + error.message); 
-            return; 
+
+        try {
+            const { error } = await supabaseClient.from("matches").insert({
+                user_id: user.id,
+                my_char: myChar,
+                enemy_char: enemyChar,
+                result: result,
+                memo: memo,
+                created_at: new Date().toISOString()
+            });
+
+            if (error) { 
+                alert("保存エラー: " + error.message); 
+                return; 
+            }
+
+            document.getElementById("memo").value = "";
+            document.getElementById("enemyChar").value = "";
+            document.getElementById("myChar").value = "";
+            loadData();
+        } catch (e) {
+            console.error("保存エラー:", e);
         }
-        document.getElementById("memo").value = "";
-        document.getElementById("enemyChar").value = "";
-        document.getElementById("myChar").value = "";
-        loadData();
     }
 
     async function loadData() {
@@ -762,369 +778,439 @@
     }
 
     async function deleteMatch(id) {
-        deleteTargetId = id;
-        document.getElementById("deleteModal").classList.add("active");
-    }
-
-    async function confirmDelete() {
-        if (!deleteTargetId) return;
-        const { error } = await supabaseClient
-            .from("matches")
-            .delete()
-            .eq("id", deleteTargetId);
+        if (!confirm("この試合記録を削除してよろしいですか？")) return;
         
-        if (error) {
-            alert("削除エラー: " + error.message);
-        } else {
-            loadData();
+        try {
+            const { error } = await supabaseClient
+                .from("matches")
+                .delete()
+                .eq("id", id);
+            
+            if (error) {
+                alert("削除エラー: " + error.message);
+            } else {
+                loadData();
+            }
+        } catch (e) {
+            console.error("削除エラー:", e);
         }
-        closeDeleteModal();
-    }
-
-    function closeDeleteModal() {
-        document.getElementById("deleteModal").classList.remove("active");
-        deleteTargetId = null;
     }
 
     // ===== UI操作 =====
-    function switchTab(tabName) {
-        // タブボタンの更新
-        document.querySelectorAll(".tab-btn").forEach(btn => {
-            btn.classList.remove("active");
-        });
+    function switchTab(tabId) {
+        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
         event.target.classList.add("active");
-
-        // タブコンテンツの更新
-        document.querySelectorAll(".tab-content").forEach(tab => {
-            tab.classList.remove("active");
-        });
-        document.getElementById(tabName).classList.add("active");
+        
+        if (tabId === 'winrate') {
+            setTimeout(() => {
+                renderWinrateCharts();
+            }, 100);
+        }
+        render();
     }
 
-    // ===== データ解析と表示 =====
+    // ===== 統計計算 =====
+    function calcWL(arr) {
+        let w = 0, l = 0;
+        arr.forEach(m => m.result === 'win' ? w++ : l++);
+        return { w, l };
+    }
+
+    function winrate(w, l) {
+        return (w + l) ? ((w * 100) / (w + l)).toFixed(1) : '0.0';
+    }
+
+    function getToday() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function calcCurrentStreak() {
+        if (allMatches.length === 0) return { winStreak: 0, loseStreak: 0 };
+        
+        let winStreak = 0, loseStreak = 0;
+        let lastResult = null;
+        
+        for (let i = 0; i < allMatches.length; i++) {
+            if (lastResult === null) {
+                lastResult = allMatches[i].result;
+            }
+            
+            if (allMatches[i].result === lastResult) {
+                if (lastResult === 'win') {
+                    winStreak++;
+                } else {
+                    loseStreak++;
+                }
+            } else {
+                break;
+            }
+        }
+        
+        return { winStreak, loseStreak };
+    }
+
+    // ===== レンダリング =====
     function render() {
         renderOverallStats();
         renderTodayStats();
-        renderWeeklyStats();
-        renderMonthlyStats();
+        renderStreak();
         renderAnalysis();
+        renderMatchups();
         renderHistory();
     }
 
     function renderOverallStats() {
-        const win = allMatches.filter(x => x.result === "win").length;
-        const lose = allMatches.filter(x => x.result === "lose").length;
-        const rate = (win + lose) ? ((win / (win + lose)) * 100).toFixed(1) : "0.0";
-        
-        const streak = getStreak();
-        
-        let html = `
-            <div class="stat-box">
-                <div class="value">${win}勝 ${lose}敗</div>
-                <div class="label">勝率: ${rate}%</div>
+        const allStats = calcWL(allMatches);
+        const rate = winrate(allStats.w, allStats.l);
+
+        document.getElementById('overallStats').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">総合戦績</div>
+                <div class="stat-value">${allStats.w}勝${allStats.l}敗</div>
             </div>
-            <div class="stat-mini">
-                <div class="label">総試合数</div>
-                <div class="value">${win + lose}</div>
+            <div class="stat-card">
+                <div class="stat-label">総合勝率</div>
+                <div class="stat-value winrate">${rate}%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">総試合数</div>
+                <div class="stat-value">${allMatches.length}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">最近30日</div>
+                <div class="stat-value winrate">${winrate(
+                    calcWL(allMatches.filter(m => {
+                        const d = new Date(m.created_at);
+                        const now = new Date();
+                        return (now - d) / (1000 * 60 * 60 * 24) <= 30;
+                    })).w,
+                    calcWL(allMatches.filter(m => {
+                        const d = new Date(m.created_at);
+                        const now = new Date();
+                        return (now - d) / (1000 * 60 * 60 * 24) <= 30;
+                    })).l
+                )}%</div>
             </div>
         `;
-
-        if (streak.count > 0) {
-            html += `
-                <div class="stat-mini">
-                    <div class="label">現在の連勝</div>
-                    <div class="value">${streak.count}</div>
-                </div>
-            `;
-        } else if (streak.count < 0) {
-            html += `
-                <div class="stat-mini">
-                    <div class="label">現在の連敗</div>
-                    <div class="value">${Math.abs(streak.count)}</div>
-                </div>
-            `;
-        }
-
-        document.getElementById("overallStats").innerHTML = html;
     }
 
     function renderTodayStats() {
-        const today = new Date().toDateString();
+        const today = getToday();
         const todayMatches = allMatches.filter(m => 
-            new Date(m.created_at).toDateString() === today
+            new Date(m.created_at).toISOString().substring(0, 10) === today
         );
-        
-        if (todayMatches.length === 0) {
-            document.getElementById("todayStats").innerHTML = '<div class="no-data">今日はまだ試合がありません</div>';
-            return;
-        }
+        const todayStats = calcWL(todayMatches);
+        const weekMatches = allMatches.filter(m => {
+            const d = new Date(m.created_at);
+            const now = new Date();
+            return (now - d) / (1000 * 60 * 60 * 24) <= 7;
+        });
+        const weekStats = calcWL(weekMatches);
 
-        const win = todayMatches.filter(x => x.result === "win").length;
-        const lose = todayMatches.filter(x => x.result === "lose").length;
-        const rate = ((win / (win + lose)) * 100).toFixed(1);
-
-        let html = `
-            <div class="stat-box">
-                <div class="value">${win}勝 ${lose}敗</div>
-                <div class="label">勝率: ${rate}%</div>
+        document.getElementById('todayStats').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">本日戦績</div>
+                <div class="stat-value">${todayStats.w}勝${todayStats.l}敗</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">本日勝率</div>
+                <div class="stat-value winrate">${winrate(todayStats.w, todayStats.l)}%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">今週戦績</div>
+                <div class="stat-value">${weekStats.w}勝${weekStats.l}敗</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">今週勝率</div>
+                <div class="stat-value winrate">${winrate(weekStats.w, weekStats.l)}%</div>
             </div>
         `;
-
-        todayMatches.forEach(m => {
-            html += renderMatchItem(m);
-        });
-
-        document.getElementById("todayStats").innerHTML = html;
     }
 
-    function renderWeeklyStats() {
-        const weekMatches = getWeekMatches();
-        
-        if (weekMatches.length === 0) {
-            document.getElementById("weeklyStats").innerHTML = '<div class="no-data">今週はまだ試合がありません</div>';
-            return;
-        }
-
-        const win = weekMatches.filter(x => x.result === "win").length;
-        const lose = weekMatches.filter(x => x.result === "lose").length;
-        const rate = ((win / (win + lose)) * 100).toFixed(1);
-
-        let html = `
-            <div class="stat-box">
-                <div class="value">${win}勝 ${lose}敗</div>
-                <div class="label">勝率: ${rate}%</div>
-            </div>
-        `;
-
-        weekMatches.forEach(m => {
-            html += renderMatchItem(m);
-        });
-
-        document.getElementById("weeklyStats").innerHTML = html;
+    function renderStreak() {
+        const streak = calcCurrentStreak();
+        document.getElementById('winStreak').textContent = streak.winStreak;
+        document.getElementById('loseStreak').textContent = streak.loseStreak;
     }
 
-    function renderMonthlyStats() {
-        const monthMatches = getMonthMatches();
-        
-        if (monthMatches.length === 0) {
-            document.getElementById("monthlyStats").innerHTML = '<div class="no-data">今月はまだ試合がありません</div>';
-            return;
+    function renderWinrateCharts() {
+        // 勝率推移チャート（過去14日）
+        const last14Days = {};
+        const today = new Date();
+
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            const key = `${d.getMonth() + 1}/${d.getDate()}`;
+            last14Days[key] = { w: 0, l: 0 };
         }
 
-        const win = monthMatches.filter(x => x.result === "win").length;
-        const lose = monthMatches.filter(x => x.result === "lose").length;
-        const rate = ((win / (win + lose)) * 100).toFixed(1);
-
-        let html = `
-            <div class="stat-box">
-                <div class="value">${win}勝 ${lose}敗</div>
-                <div class="label">勝率: ${rate}%</div>
-            </div>
-        `;
-
-        monthMatches.forEach(m => {
-            html += renderMatchItem(m);
+        allMatches.filter(m => {
+            const d = new Date(m.created_at);
+            return (today - d) / (1000 * 60 * 60 * 24) <= 14;
+        }).forEach(m => {
+            const d = new Date(m.created_at);
+            const key = `${d.getMonth() + 1}/${d.getDate()}`;
+            if (m.result === 'win') last14Days[key].w++;
+            else last14Days[key].l++;
         });
 
-        document.getElementById("monthlyStats").innerHTML = html;
+        const labels = Object.keys(last14Days);
+        const winrates = labels.map(k => {
+            const s = last14Days[k];
+            return ((s.w / (s.w + s.l)) * 100) || 0;
+        });
 
-        // 月別一覧
-        const monthStats = {};
-        allMatches.forEach(m => {
-            const date = new Date(m.created_at);
-            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-            if (!monthStats[key]) {
-                monthStats[key] = { win: 0, lose: 0 };
+        if (charts.winrate) charts.winrate.destroy();
+        const ctx1 = document.getElementById('winrateChart').getContext('2d');
+        charts.winrate = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '勝率 (%)',
+                    data: winrates,
+                    borderColor: '#ff6b35',
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ff6b35',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#b0b8c1' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#b0b8c1' },
+                        grid: { color: 'rgba(255, 107, 53, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#b0b8c1' },
+                        grid: { color: 'rgba(255, 107, 53, 0.1)' }
+                    }
+                }
             }
-            if (m.result === "win") monthStats[key].win++;
-            else monthStats[key].lose++;
         });
-
-        let tableHtml = '';
-        Object.keys(monthStats).sort().reverse().forEach(month => {
-            const stats = monthStats[month];
-            const rate = ((stats.win / (stats.win + stats.lose)) * 100).toFixed(1);
-            tableHtml += `
-                <tr>
-                    <td>${month}</td>
-                    <td>${stats.win}</td>
-                    <td>${stats.lose}</td>
-                    <td>${rate}%</td>
-                </tr>
-            `;
-        });
-
-        document.getElementById("monthlyTable").innerHTML = tableHtml || '<tr><td colspan="4" class="no-data">データなし</td></tr>';
-    }
-
-    function renderAnalysis() {
-        // 連勝・連敗
-        const streak = getStreak();
-        let streakHtml = '';
-        if (streak.count > 0) {
-            streakHtml += `
-                <div class="streak">
-                    <div class="label">現在の連勝</div>
-                    <div class="value">${streak.count}</div>
-                </div>
-            `;
-        } else if (streak.count < 0) {
-            streakHtml += `
-                <div class="streak lose">
-                    <div class="label">現在の連敗</div>
-                    <div class="value">${Math.abs(streak.count)}</div>
-                </div>
-            `;
-        }
-        document.getElementById("streakInfo").innerHTML = streakHtml || '<div class="no-data">試合記録がありません</div>';
 
         // 相手キャラ別勝率
         const enemyStats = {};
         allMatches.forEach(m => {
             if (!enemyStats[m.enemy_char]) {
-                enemyStats[m.enemy_char] = { win: 0, lose: 0 };
+                enemyStats[m.enemy_char] = { w: 0, l: 0 };
             }
-            if (m.result === "win") enemyStats[m.enemy_char].win++;
-            else enemyStats[m.enemy_char].lose++;
+            if (m.result === 'win') enemyStats[m.enemy_char].w++;
+            else enemyStats[m.enemy_char].l++;
         });
 
-        let enemyHtml = '';
-        Object.keys(enemyStats).sort().forEach(char => {
-            const stats = enemyStats[char];
-            const total = stats.win + stats.lose;
-            const rate = ((stats.win / total) * 100).toFixed(1);
-            const barWidth = rate;
-            enemyHtml += `
-                <tr>
-                    <td>${escapeHtml(char)}</td>
-                    <td>${total}</td>
-                    <td>${stats.win}</td>
-                    <td>${stats.lose}</td>
-                    <td>
-                        <div class="winrate-bar">
-                            <div class="winrate-fill" style="width: ${barWidth}%">${rate}%</div>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
-        document.getElementById("enemyCharTable").innerHTML = enemyHtml || '<tr><td colspan="5" class="no-data">データなし</td></tr>';
-
-        // 自キャラ別分析
-        const charAnalysis = {};
-        allMatches.forEach(m => {
-            const key = `${m.my_char} vs ${m.enemy_char}`;
-            if (!charAnalysis[key]) {
-                charAnalysis[key] = { win: 0, lose: 0 };
-            }
-            if (m.result === "win") charAnalysis[key].win++;
-            else charAnalysis[key].lose++;
+        const enemyLabels = Object.keys(enemyStats).sort();
+        const enemyWinrates = enemyLabels.map(k => {
+            const s = enemyStats[k];
+            return parseFloat(winrate(s.w, s.l));
         });
 
-        let charHtml = '';
-        Object.keys(charAnalysis).sort().forEach(key => {
-            const stats = charAnalysis[key];
-            const total = stats.win + stats.lose;
-            const rate = ((stats.win / total) * 100).toFixed(1);
-            if (total >= 2) { // 2戦以上のみ表示
-                charHtml += `
-                    <div class="stat-mini">
-                        <div class="label">${escapeHtml(key)}</div>
-                        <div class="value">${stats.win}-${stats.lose} (${rate}%)</div>
-                    </div>
-                `;
+        if (charts.matchup) charts.matchup.destroy();
+        const ctx2 = document.getElementById('matchupChart').getContext('2d');
+        charts.matchup = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: enemyLabels,
+                datasets: [{
+                    label: '勝率 (%)',
+                    data: enemyWinrates,
+                    backgroundColor: enemyWinrates.map(v => 
+                        v >= 60 ? '#2ecc71' : v < 40 ? '#e74c3c' : '#f39c12'
+                    ),
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#b0b8c1' }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#b0b8c1' },
+                        grid: { color: 'rgba(255, 107, 53, 0.1)' }
+                    },
+                    y: {
+                        ticks: { color: '#b0b8c1' },
+                        grid: { color: 'transparent' }
+                    }
+                }
             }
         });
-        document.getElementById("charAnalysis").innerHTML = charHtml || '<div class="no-data">対戦データが不足しています</div>';
-
-        // 対策メモ一覧
-        const memos = allMatches.filter(m => m.memo && m.memo.trim());
-        let memoHtml = '';
-        memos.forEach(m => {
-            memoHtml += `
-                <div class="stat-mini">
-                    <div class="label">${escapeHtml(m.my_char)} vs ${escapeHtml(m.enemy_char)}</div>
-                    <div style="font-size: 12px; color: #bbb;">${escapeHtml(m.memo)}</div>
-                </div>
-            `;
-        });
-        document.getElementById("strategyMemos").innerHTML = memoHtml || '<div class="no-data">対策メモがありません</div>';
     }
 
-    function renderHistory() {
-        if (allMatches.length === 0) {
-            document.getElementById("historyList").innerHTML = '<div class="no-data">試合記録がありません</div>';
+    function renderAnalysis() {
+        const myChar = document.getElementById('analysisMySelect').value;
+        const myMatches = myChar ? allMatches.filter(m => m.my_char === myChar) : allMatches;
+
+        if (myMatches.length === 0) {
+            document.getElementById('analysisContent').innerHTML = 
+                '<div class="empty-state"><div class="empty-state-icon">📊</div>記録がありません</div>';
             return;
         }
 
-        let html = '';
-        allMatches.forEach(m => {
-            html += renderMatchItem(m, true);
+        const allStats = calcWL(myMatches);
+        const monthlyData = {};
+        myMatches.forEach(m => {
+            const d = new Date(m.created_at);
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            if (!monthlyData[key]) monthlyData[key] = { w: 0, l: 0 };
+            if (m.result === 'win') monthlyData[key].w++;
+            else monthlyData[key].l++;
         });
-        document.getElementById("historyList").innerHTML = html;
-    }
 
-    function renderMatchItem(match, withDelete = false) {
-        const dateTime = new Date(match.created_at).toLocaleString('ja-JP');
         let html = `
-            <div class="item">
-                <div class="item-content">
-                    <div class="item-header">
-                        <span class="item-matchup">${escapeHtml(match.my_char)} vs ${escapeHtml(match.enemy_char)}</span>
-                        <span class="item-result ${match.result}">${match.result === "win" ? "勝ち" : "負け"}</span>
-                    </div>
-                    <div class="item-datetime">${dateTime}</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">総合勝率</div>
+                    <div class="stat-value winrate">${winrate(allStats.w, allStats.l)}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">試合数</div>
+                    <div class="stat-value">${myMatches.length}</div>
+                </div>
+            </div>
+            <h3 style="margin-top: 24px;">月別戦績</h3>
+            <div class="monthly-list">
         `;
-        if (match.memo) {
-            html += `<div class="item-memo">"${escapeHtml(match.memo)}"</div>`;
-        }
-        html += `</div>`;
-        
-        if (withDelete) {
+
+        Object.keys(monthlyData).sort().reverse().forEach(k => {
+            const s = monthlyData[k];
             html += `
-                <div class="item-actions">
-                    <button class="btn-danger" onclick="deleteMatch(${match.id})">削除</button>
+                <div class="monthly-item">
+                    <span class="monthly-period">${k}</span>
+                    <span class="monthly-stats">${s.w}勝${s.l}敗 (${winrate(s.w, s.l)}%)</span>
                 </div>
             `;
+        });
+
+        html += '</div>';
+        document.getElementById('analysisContent').innerHTML = html;
+    }
+
+    function renderMatchups() {
+        const enemy = document.getElementById('analysisEnemySelect').value;
+        const vsMatches = enemy ? allMatches.filter(m => m.enemy_char === enemy) : allMatches;
+
+        if (vsMatches.length === 0) {
+            document.getElementById('matchupsContent').innerHTML = 
+                '<div class="empty-state"><div class="empty-state-icon">⚔️</div>記録がありません</div>';
+            return;
         }
-        
-        html += `</div>`;
-        return html;
-    }
 
-    // ===== ヘルパー関数 =====
-    function getStreak() {
-        if (allMatches.length === 0) return { count: 0 };
-        
-        let count = 0;
-        const lastResult = allMatches[0].result;
-        
-        for (let match of allMatches) {
-            if (match.result === lastResult) {
-                count += lastResult === "win" ? 1 : -1;
-            } else {
-                break;
-            }
+        const totalStats = calcWL(vsMatches);
+        const byChar = {};
+        vsMatches.forEach(m => {
+            if (!byChar[m.my_char]) byChar[m.my_char] = { w: 0, l: 0 };
+            if (m.result === 'win') byChar[m.my_char].w++;
+            else byChar[m.my_char].l++;
+        });
+
+        let html = `
+            <div class="stat-card">
+                <div class="stat-label">対${enemy || '全相手'}戦績</div>
+                <div style="font-size: 20px; margin-top: 8px; color: var(--accent); font-weight: 700;">${totalStats.w}勝${totalStats.l}敗 (${winrate(totalStats.w, totalStats.l)}%)</div>
+            </div>
+            <h3 style="margin-top: 24px;">自キャラ別</h3>
+            <div class="monthly-list">
+        `;
+
+        Object.keys(byChar).sort().forEach(k => {
+            const s = byChar[k];
+            html += `
+                <div class="monthly-item">
+                    <span class="monthly-period">${k}</span>
+                    <span class="monthly-stats">${s.w}勝${s.l}敗 (${winrate(s.w, s.l)}%)</span>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+
+        // 対策メモ
+        const memos = vsMatches.filter(v => v.memo);
+        if (memos.length > 0) {
+            html += '<h3 style="margin-top: 24px;">対策メモ</h3><div class="monthly-list">';
+            memos.slice().reverse().forEach(v => {
+                html += `
+                    <div style="padding: 12px; border-bottom: 1px solid var(--border); text-align: left;">
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">${new Date(v.created_at).toLocaleString('ja-JP')} - ${v.my_char}</div>
+                        <div style="font-style: italic; color: var(--text-secondary);">"${v.memo}"</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
         }
-        return { count };
+
+        document.getElementById('matchupsContent').innerHTML = html;
     }
 
-    function getWeekMatches() {
-        const now = new Date();
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return allMatches.filter(m => new Date(m.created_at) > weekAgo);
+    function renderHistory() {
+        const search = document.getElementById('searchFilter').value.toLowerCase();
+
+        let filtered = allMatches.filter(m => {
+            return !search || 
+                   m.my_char.toLowerCase().includes(search) || 
+                   m.enemy_char.toLowerCase().includes(search) || 
+                   (m.memo && m.memo.toLowerCase().includes(search));
+        });
+
+        if (filtered.length === 0) {
+            document.getElementById('historyList').innerHTML = 
+                '<div class="empty-state"><div class="empty-state-icon">📜</div>試合記録がありません</div>';
+            return;
+        }
+
+        document.getElementById('historyList').innerHTML = filtered
+            .map(m => `
+                <div class="monthly-item" style="flex-direction: column; align-items: flex-start;">
+                    <div style="display: flex; gap: 12px; width: 100%; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-weight: 600;">${m.my_char} <span style="color: var(--text-secondary);">vs</span> ${m.enemy_char}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">${new Date(m.created_at).toLocaleString('ja-JP')}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 12px; background: ${m.result === 'win' ? '#2ecc71' : '#e74c3c'};">
+                                ${m.result === 'win' ? '勝ち' : '負け'}
+                            </span>
+                            <button class="btn-danger" onclick="deleteMatch(${m.id})">削除</button>
+                        </div>
+                    </div>
+                    ${m.memo ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; font-style: italic;">${m.memo}</div>` : ''}
+                </div>
+            `)
+            .join('');
     }
 
-    function getMonthMatches() {
-        const now = new Date();
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        return allMatches.filter(m => new Date(m.created_at) >= monthStart);
-    }
-
-    function escapeHtml(str) {
-        if (!str) return "";
-        return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-    }
+    // イベントリスナー
+    document.getElementById('analysisMySelect').addEventListener('change', renderAnalysis);
+    document.getElementById('analysisEnemySelect').addEventListener('change', renderMatchups);
+    document.getElementById('searchFilter').addEventListener('input', renderHistory);
 
     // 初期化
     checkUser();
