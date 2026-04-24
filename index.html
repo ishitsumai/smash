@@ -52,30 +52,50 @@
     </div>
 </div>
 
+<!-- Supabaseライブラリはbodyの最後に配置 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     // 定数の定義
     const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
     
-    // クライアントの初期化
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+    let supabaseClient;
     let user = null;
+
+    // Supabaseクライアントの初期化（スクリプト読み込み後）
+    try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch (e) {
+        console.error("Supabase初期化エラー:", e);
+    }
 
     async function signup() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
+        if (!email || !password) {
+            alert("メールアドレスとパスワードを入力してください。");
+            return;
+        }
         const { error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) { alert("登録エラー: " + error.message); return; }
+        if (error) { 
+            alert("登録エラー: " + error.message); 
+            return; 
+        }
         alert("登録しました。メール確認設定がONの場合は、承認後にログインしてください。");
     }
 
     async function login() {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
+        if (!email || !password) {
+            alert("メールアドレスとパスワードを入力してください。");
+            return;
+        }
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) { alert("ログインエラー: " + error.message); return; }
+        if (error) { 
+            alert("ログインエラー: " + error.message); 
+            return; 
+        }
         window.location.reload();
     }
 
@@ -85,13 +105,17 @@
     }
 
     async function checkUser() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-            user = session.user;
-            document.getElementById("authBox").style.display = "none";
-            document.getElementById("app").style.display = "block";
-            document.getElementById("userInfo").innerText = user.email;
-            loadData();
+        try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                user = session.user;
+                document.getElementById("authBox").style.display = "none";
+                document.getElementById("app").style.display = "block";
+                document.getElementById("userInfo").innerText = user.email;
+                loadData();
+            }
+        } catch (e) {
+            console.error("ユーザー確認エラー:", e);
         }
     }
 
@@ -99,7 +123,10 @@
         const my = document.getElementById("my").value.trim();
         const enemy = document.getElementById("enemy").value.trim();
         const memo = document.getElementById("memo").value.trim();
-        if (!my || !enemy) { alert("自キャラと相手キャラを入力してください。"); return; }
+        if (!my || !enemy) { 
+            alert("自キャラと相手キャラを入力してください。"); 
+            return; 
+        }
         const { error } = await supabaseClient.from("matches").insert({
             user_id: user.id,
             my_char: my,
@@ -107,15 +134,25 @@
             result: result,
             memo: memo
         });
-        if (error) { alert("保存エラー: " + error.message); return; }
+        if (error) { 
+            alert("保存エラー: " + error.message); 
+            return; 
+        }
         document.getElementById("memo").value = "";
         loadData();
     }
 
     async function loadData() {
-        const { data, error } = await supabaseClient.from("matches").select("*").order("created_at", { ascending: false });
-        if (error) { alert("データ読込エラー: " + error.message); return; }
-        render(data || []);
+        try {
+            const { data, error } = await supabaseClient.from("matches").select("*").order("created_at", { ascending: false });
+            if (error) { 
+                alert("データ読込エラー: " + error.message); 
+                return; 
+            }
+            render(data || []);
+        } catch (e) {
+            console.error("データ読込エラー:", e);
+        }
     }
 
     function render(rows) {
@@ -138,8 +175,9 @@
         return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
-    // ページロード完了後に実行
-    document.addEventListener("DOMContentLoaded", checkUser);
+    // ページ読み込み完了後に実行
+    checkUser();
 </script>
+
 </body>
 </html>
