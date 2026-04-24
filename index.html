@@ -1,201 +1,141 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Smash Tracker</title>
-<style>
-body{font-family:sans-serif;background:#111;color:#fff;max-width:700px;margin:auto;padding:20px}
-.card{background:#222;padding:20px;border-radius:12px;margin-bottom:16px}
-input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;font-size:16px}
-button{background:#ff6b35;color:#fff;font-weight:bold;cursor:pointer}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.item{padding:10px;border-bottom:1px solid #444}
-.small{font-size:12px;color:#aaa}
-h1,h3{margin-top:0}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Smash Tracker</title>
+    <style>
+        body{font-family:sans-serif;background:#111;color:#fff;max-width:700px;margin:auto;padding:20px}
+        .card{background:#222;padding:20px;border-radius:12px;margin-bottom:16px}
+        input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;font-size:16px}
+        button{background:#ff6b35;color:#fff;font-weight:bold;cursor:pointer}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .item{padding:10px;border-bottom:1px solid #444}
+        .small{font-size:12px;color:#aaa}
+        h1,h3{margin-top:0}
+    </style>
 </head>
 <body>
 
 <h1>⚔ Smash Tracker</h1>
 
 <div class="card" id="authBox">
-  <h3>ログイン / 新規登録</h3>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="signup()">新規登録</button>
-  <button onclick="login()">ログイン</button>
+    <h3>ログイン / 新規登録</h3>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button type="button" onclick="signup()">新規登録</button>
+    <button type="button" onclick="login()">ログイン</button>
 </div>
 
 <div id="app" style="display:none">
-
-  <div class="card">
-    <div id="userInfo"></div>
-    <button onclick="logout()">ログアウト</button>
-  </div>
-
-  <div class="card">
-    <h3>試合記録</h3>
-    <input id="my" placeholder="自キャラ">
-    <input id="enemy" placeholder="相手キャラ">
-    <textarea id="memo" placeholder="メモ"></textarea>
-
-    <div class="row">
-      <button onclick="saveMatch('win')">勝ち</button>
-      <button onclick="saveMatch('lose')">負け</button>
+    <div class="card">
+        <div id="userInfo"></div>
+        <button type="button" onclick="logout()">ログアウト</button>
     </div>
-  </div>
-
-  <div class="card">
-    <h3>戦績</h3>
-    <div id="stats"></div>
-  </div>
-
-  <div class="card">
-    <h3>履歴</h3>
-    <div id="list"></div>
-  </div>
-
+    <div class="card">
+        <h3>試合記録</h3>
+        <input id="my" placeholder="自キャラ">
+        <input id="enemy" placeholder="相手キャラ">
+        <textarea id="memo" placeholder="メモ"></textarea>
+        <div class="row">
+            <button type="button" onclick="saveMatch('win')">勝ち</button>
+            <button type="button" onclick="saveMatch('lose')">負け</button>
+        </div>
+    </div>
+    <div class="card">
+        <h3>戦績</h3>
+        <div id="stats"></div>
+    </div>
+    <div class="card">
+        <h3>履歴</h3>
+        <div id="list"></div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
+    const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
+    let user = null;
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    async function signup() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) { alert(error.message); return; }
+        alert("登録しました。メール確認が必要な場合は承認後ログインしてください。");
+    }
 
-let user = null;
+    async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { alert(error.message); return; }
+        window.location.reload();
+    }
 
-async function signup(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+    async function logout() {
+        await supabase.auth.signOut();
+        window.location.reload();
+    }
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password
-  });
+    async function checkUser() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            user = session.user;
+            document.getElementById("authBox").style.display = "none";
+            document.getElementById("app").style.display = "block";
+            document.getElementById("userInfo").innerText = user.email;
+            loadData();
+        }
+    }
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+    async function saveMatch(result) {
+        const my = document.getElementById("my").value.trim();
+        const enemy = document.getElementById("enemy").value.trim();
+        const memo = document.getElementById("memo").value.trim();
+        if (!my || !enemy) { alert("自キャラと相手キャラを入力してください。"); return; }
+        const { error } = await supabase.from("matches").insert({
+            user_id: user.id,
+            my_char: my,
+            enemy_char: enemy,
+            result: result,
+            memo: memo
+        });
+        if (error) { alert(error.message); return; }
+        document.getElementById("memo").value = "";
+        loadData();
+    }
 
-  alert("登録しました。確認メールが来た場合は承認後ログインしてください。");
-}
+    async function loadData() {
+        const { data, error } = await supabase.from("matches").select("*").order("created_at", { ascending: false });
+        if (error) { alert(error.message); return; }
+        render(data || []);
+    }
 
-async function login(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+    function render(rows) {
+        const win = rows.filter(x => x.result === "win").length;
+        const lose = rows.filter(x => x.result === "lose").length;
+        const rate = (win + lose) ? ((win / (win + lose)) * 100).toFixed(1) : "0.0";
+        document.getElementById("stats").innerHTML = `${win}勝 ${lose}敗 勝率 ${rate}%`;
+        document.getElementById("list").innerHTML = rows.map(r => `
+            <div class="item">
+                <div>${escapeHtml(r.my_char)} vs ${escapeHtml(r.enemy_char)}</div>
+                <div>${r.result === "win" ? "勝ち" : "負け"}</div>
+                <div class="small">${r.created_at}</div>
+                <div class="small">${escapeHtml(r.memo || "")}</div>
+            </div>
+        `).join("");
+    }
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
 
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  location.reload();
-}
-
-async function logout(){
-  await supabase.auth.signOut();
-  location.reload();
-}
-
-async function checkUser(){
-  const { data:{ session } } = await supabase.auth.getSession();
-
-  if(session){
-    user = session.user;
-    document.getElementById("authBox").style.display = "none";
-    document.getElementById("app").style.display = "block";
-    document.getElementById("userInfo").innerText = user.email;
-    loadData();
-  }
-}
-
-async function saveMatch(result){
-  const my = document.getElementById("my").value.trim();
-  const enemy = document.getElementById("enemy").value.trim();
-  const memo = document.getElementById("memo").value.trim();
-
-  if(!my || !enemy){
-    alert("自キャラと相手キャラを入力してください。");
-    return;
-  }
-
-  const { error } = await supabase
-    .from("matches")
-    .insert({
-      user_id: user.id,
-      my_char: my,
-      enemy_char: enemy,
-      result: result,
-      memo: memo
-    });
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  document.getElementById("memo").value = "";
-  loadData();
-}
-
-async function loadData(){
-  const { data, error } = await supabase
-    .from("matches")
-    .select("*")
-    .order("created_at", { ascending:false });
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  render(data || []);
-}
-
-function render(rows){
-  const win = rows.filter(x => x.result === "win").length;
-  const lose = rows.filter(x => x.result === "lose").length;
-  const rate = (win + lose)
-    ? ((win / (win + lose)) * 100).toFixed(1)
-    : "0.0";
-
-  document.getElementById("stats").innerHTML =
-    `${win}勝 ${lose}敗 勝率 ${rate}%`;
-
-  document.getElementById("list").innerHTML =
-    rows.map(r => `
-      <div class="item">
-        <div>${escapeHtml(r.my_char)} vs ${escapeHtml(r.enemy_char)}</div>
-        <div>${r.result === "win" ? "勝ち" : "負け"}</div>
-        <div class="small">${r.created_at}</div>
-        <div class="small">${escapeHtml(r.memo || "")}</div>
-      </div>
-    `).join("");
-}
-
-function escapeHtml(str){
-  return str
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
-}
-
-checkUser();
+    checkUser();
 </script>
-
 </body>
 </html>
-```
