@@ -107,7 +107,7 @@
         select, input, textarea {
             width: 100%;
             padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 20, 25, 0.8);
             border: 1px solid var(--border);
             border-radius: 10px;
             color: var(--text-primary);
@@ -121,6 +121,17 @@
             border-color: var(--primary);
             background: rgba(255, 107, 53, 0.05);
             box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        /* プルダウンオプション */
+        select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        select option:checked {
+            background: linear-gradient(var(--primary), var(--primary));
+            color: white;
         }
 
         textarea {
