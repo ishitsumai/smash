@@ -54,7 +54,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 定数の定義（二重宣言を避けるため一度だけ記述）
+    // 定数の定義
     const SUPABASE_URL = "https://eucirhzjjiddexqphtqf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1Y2lyaHpqamlkZGV4cXBodHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTY4NDksImV4cCI6MjA5MjU3Mjg0OX0.N7pJgqLthF3IgpUsMvyjRiSaOuKQRQR1dVC9UntDfCI";
     
@@ -138,8 +138,8 @@
         return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
-    // アプリ起動時に実行
-    checkUser();
+    // ページロード完了後に実行
+    document.addEventListener("DOMContentLoaded", checkUser);
 </script>
 </body>
 </html>
