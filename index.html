@@ -78,6 +78,11 @@ button{
   color:black;
 }
 
+.logout{
+  background:#475569;
+  color:white;
+}
+
 .stat{
   font-size:20px;
   font-weight:bold;
@@ -101,11 +106,6 @@ canvas{
   padding:10px;
 }
 
-.logout{
-  background:#475569;
-  color:white;
-}
-
 .flex{
   display:flex;
   gap:10px;
@@ -127,6 +127,7 @@ canvas{
 
 <div class="card" id="loginCard">
   <h2>Googleログイン</h2>
+
   <button class="google" onclick="login()">
     Googleでログイン
   </button>
@@ -135,9 +136,11 @@ canvas{
 <div id="app" style="display:none;">
 
 <div class="card">
+
   <h2>試合記録</h2>
 
   <label>自キャラ</label>
+
   <select id="myChar">
     <option>クラウド</option>
     <option>ホムラ</option>
@@ -148,12 +151,15 @@ canvas{
   </select>
 
   <label>相手キャラ</label>
+
   <input id="enemyChar" placeholder="例: ソニック">
 
   <label>メモ</label>
+
   <textarea id="memo"></textarea>
 
   <div class="flex">
+
     <button class="win" onclick="saveMatch('win')">
       勝ち
     </button>
@@ -161,10 +167,13 @@ canvas{
     <button class="lose" onclick="saveMatch('lose')">
       負け
     </button>
+
   </div>
+
 </div>
 
 <div class="card">
+
   <h2>総合戦績</h2>
 
   <div class="stat" id="totalStats">
@@ -174,24 +183,31 @@ canvas{
   <div class="stat" id="winRate">
     勝率 0%
   </div>
+
 </div>
 
 <div class="card">
+
   <h2>勝率推移グラフ</h2>
 
   <canvas id="chart"></canvas>
+
 </div>
 
 <div class="card">
+
   <h2>履歴</h2>
 
   <div id="history"></div>
+
 </div>
 
 <div class="card">
+
   <button class="logout" onclick="logout()">
     ログアウト
   </button>
+
 </div>
 
 </div>
@@ -200,22 +216,25 @@ canvas{
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getDatabase,
   ref,
   push,
   onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDRPoPzYLgEQfRo78-9sp8pRtqvwX_HSyw",
@@ -245,11 +264,11 @@ window.login = async function(){
 
   try{
 
-    await signInWithPopup(auth, provider);
+    await signInWithRedirect(auth, provider);
 
   }catch(e){
 
-    alert(e.message);
+    alert("ログインエラー: " + e.message);
 
   }
 
@@ -285,11 +304,14 @@ onAuthStateChanged(auth, (user)=>{
 
 window.saveMatch = async function(result){
 
-  const myChar = document.getElementById("myChar").value;
+  const myChar =
+    document.getElementById("myChar").value;
 
-  const enemyChar = document.getElementById("enemyChar").value;
+  const enemyChar =
+    document.getElementById("enemyChar").value;
 
-  const memo = document.getElementById("memo").value;
+  const memo =
+    document.getElementById("memo").value;
 
   if(enemyChar.trim()===""){
 
@@ -299,18 +321,15 @@ window.saveMatch = async function(result){
 
   }
 
-  const matchRef = ref(db, "matches/" + currentUser.uid);
+  const matchRef =
+    ref(db, "matches/" + currentUser.uid);
 
   await push(matchRef, {
 
     myChar,
-
     enemyChar,
-
     memo,
-
     result,
-
     timestamp: Date.now()
 
   });
@@ -321,7 +340,8 @@ window.saveMatch = async function(result){
 
 function loadMatches(){
 
-  const matchRef = ref(db, "matches/" + currentUser.uid);
+  const matchRef =
+    ref(db, "matches/" + currentUser.uid);
 
   onValue(matchRef, (snapshot)=>{
 
@@ -339,7 +359,9 @@ function loadMatches(){
 
     }
 
-    allMatches.sort((a,b)=>a.timestamp-b.timestamp);
+    allMatches.sort((a,b)=>
+      a.timestamp - b.timestamp
+    );
 
     render();
 
@@ -366,12 +388,12 @@ function renderStats(){
   allMatches.forEach(m=>{
 
     if(m.result==="win") wins++;
-
     else loses++;
 
   });
 
-  const rate = wins+loses===0
+  const rate =
+    wins + loses === 0
     ? 0
     : ((wins/(wins+loses))*100).toFixed(1);
 
@@ -385,7 +407,8 @@ function renderStats(){
 
 function renderHistory(){
 
-  const history = document.getElementById("history");
+  const history =
+    document.getElementById("history");
 
   history.innerHTML = "";
 
@@ -433,15 +456,18 @@ function renderChart(){
 
     if(m.result==="win") wins++;
 
-    const rate = (wins/(i+1))*100;
+    const rate =
+      (wins/(i+1))*100;
 
     cumulative.push(rate);
 
   });
 
-  const labels = allMatches.map((_,i)=>i+1);
+  const labels =
+    allMatches.map((_,i)=>i+1);
 
-  const ctx = document.getElementById("chart");
+  const ctx =
+    document.getElementById("chart");
 
   if(chart){
 
