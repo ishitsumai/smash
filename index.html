@@ -366,11 +366,6 @@ header{
     </div>
 
     <div>
-      <label>セッション</label>
-      <input type="text" class="input" id="session" placeholder="夜ランクマ など">
-    </div>
-
-    <div>
 
       <label>自キャラ</label>
 
@@ -378,7 +373,7 @@ header{
 
         <select class="input" id="my-char"></select>
 
-        <button class="add-btn" id="add-my-char">
+        <button class="add-btn" id="add-char">
           ＋
         </button>
 
@@ -393,10 +388,6 @@ header{
       <div class="char-row">
 
         <select class="input" id="enemy-char"></select>
-
-        <button class="add-btn" id="add-enemy-char">
-          ＋
-        </button>
 
       </div>
 
@@ -524,7 +515,8 @@ import {
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-  getAuth,
+  initializeAuth,
+  browserLocalPersistence,
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
@@ -553,15 +545,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+
+const auth = initializeAuth(app,{
+  persistence: browserLocalPersistence
+});
+
 const db = getDatabase(app);
+
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
 let records = [];
-
-let myCharacters = [];
-let enemyCharacters = [];
+let characters = [];
 
 let mainChart = null;
 let dailyChart = null;
@@ -570,7 +565,6 @@ const login = document.getElementById("login");
 const appEl = document.getElementById("app");
 
 const dateEl = document.getElementById("date");
-const sessionEl = document.getElementById("session");
 const myCharEl = document.getElementById("my-char");
 const enemyCharEl = document.getElementById("enemy-char");
 const memoEl = document.getElementById("memo");
@@ -581,7 +575,20 @@ new Date().toISOString().slice(0,10);
 document.getElementById("login-btn")
 .onclick = async()=>{
 
-  await signInWithPopup(auth,provider);
+  try{
+
+    await signInWithPopup(auth,provider);
+
+  }catch(err){
+
+    console.error(err);
+
+    alert(
+      "ログイン失敗\n\n" +
+      err.message
+    );
+
+  }
 
 };
 
@@ -612,68 +619,61 @@ onAuthStateChanged(auth,user=>{
 
 });
 
-async function addCharacter(type){
+async function addCharacter(){
 
   const name = prompt("キャラ名");
 
   if(!name)return;
 
-  if(type==="my"){
+  if(characters.includes(name)){
 
-    myCharacters.push(name);
+    alert("既に存在します");
 
-    await set(
-      ref(db,
-      `users/${currentUser.uid}/settings/myCharacters`),
-      myCharacters
-    );
-
-  }else{
-
-    enemyCharacters.push(name);
-
-    await set(
-      ref(db,
-      `users/${currentUser.uid}/settings/enemyCharacters`),
-      enemyCharacters
-    );
+    return;
 
   }
 
+  characters.push(name);
+
+  characters.sort();
+
+  await set(
+    ref(
+      db,
+      `users/${currentUser.uid}/settings/characters`
+    ),
+    characters
+  );
+
 }
 
-document.getElementById("add-my-char")
-.onclick = ()=>addCharacter("my");
-
-document.getElementById("add-enemy-char")
-.onclick = ()=>addCharacter("enemy");
+document.getElementById("add-char")
+.onclick = ()=>addCharacter();
 
 function renderCharacterLists(){
 
   myCharEl.innerHTML = "";
 
-  myCharacters.forEach(c=>{
-
-    const op = document.createElement("option");
-
-    op.value = c;
-    op.textContent = c;
-
-    myCharEl.appendChild(op);
-
-  });
-
   enemyCharEl.innerHTML =
   `<option value="">選択</option>`;
 
-  enemyCharacters.forEach(c=>{
+  characters.forEach(c=>{
 
-    const op = document.createElement("option");
+    const op1 =
+    document.createElement("option");
 
-    op.value = c;
-    op.textContent = c;
+    op1.value = c;
+    op1.textContent = c;
 
-    enemyCharEl.appendChild(op);
+    myCharEl.appendChild(op1);
+
+    const op2 =
+    document.createElement("option");
+
+    op2.value = c;
+    op2.textContent = c;
+
+    enemyCharEl.appendChild(op2);
 
   });
 
@@ -682,25 +682,31 @@ function renderCharacterLists(){
 function loadSettings(){
 
   onValue(
-    ref(db,
-    `users/${currentUser.uid}/settings`),
+    ref(
+      db,
+      `users/${currentUser.uid}/settings`
+    ),
 
     snap=>{
 
       const data = snap.val() || {};
 
-      myCharacters =
-      data.myCharacters ||
-      ["マリオ","クラウド"];
-
-      enemyCharacters =
-      data.enemyCharacters ||
-      ["ピカチュウ","スティーブ"];
+      characters =
+      data.characters ||
+      [
+        "マリオ",
+        "クラウド",
+        "ピカチュウ",
+        "スティーブ"
+      ];
 
       renderCharacterLists();
 
       if(data.lastMyChar){
-        myCharEl.value = data.lastMyChar;
+
+        myCharEl.value =
+        data.lastMyChar;
+
       }
 
     }
@@ -712,10 +718,8 @@ async function addRecord(result){
 
   const payload = {
 
-    date:dateEl.value,
-
-    session:
-    sessionEl.value.trim(),
+    date:
+    dateEl.value,
 
     myChar:
     myCharEl.value,
@@ -734,14 +738,18 @@ async function addRecord(result){
   };
 
   await push(
-    ref(db,
-    `users/${currentUser.uid}/records`),
+    ref(
+      db,
+      `users/${currentUser.uid}/records`
+    ),
     payload
   );
 
   await set(
-    ref(db,
-    `users/${currentUser.uid}/settings/lastMyChar`),
+    ref(
+      db,
+      `users/${currentUser.uid}/settings/lastMyChar`
+    ),
     myCharEl.value
   );
 
@@ -763,7 +771,9 @@ document.getElementById("rematch-btn")
 
   const last =
   [...records]
-  .sort((a,b)=>b.createdAt-a.createdAt)[0];
+  .sort((a,b)=>
+    b.createdAt-a.createdAt
+  )[0];
 
   await addRecord(last.result);
 
@@ -772,8 +782,10 @@ document.getElementById("rematch-btn")
 function loadRecords(){
 
   onValue(
-    ref(db,
-    `users/${currentUser.uid}/records`),
+    ref(
+      db,
+      `users/${currentUser.uid}/records`
+    ),
 
     snap=>{
 
@@ -789,7 +801,8 @@ function loadRecords(){
       });
 
       records.sort((a,b)=>
-      a.createdAt-b.createdAt);
+        a.createdAt-b.createdAt
+      );
 
       renderAll();
 
@@ -1323,7 +1336,6 @@ function renderHistory(){
           color:#8e96a3;
           font-size:.85rem">
 
-            ${r.session || ""}
             ${r.memo || ""}
 
           </div>
