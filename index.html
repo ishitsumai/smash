@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>スマブラ戦績管理</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
+
 *{
   margin:0;
   padding:0;
@@ -15,29 +16,30 @@
 }
 
 :root{
-  --bg:#0f0f11;
-  --card:#1b1b20;
-  --border:#2c2c35;
-  --text:#f2f2f2;
-  --muted:#999;
-  --accent:#ff5f52;
-  --win:#35d07f;
-  --lose:#ff5f52;
-  --shadow:0 4px 20px rgba(0,0,0,.45);
+  --bg:#0f1014;
+  --card:#1a1c22;
+  --border:#2d313a;
+  --text:#f3f3f3;
+  --muted:#8e96a3;
+  --accent:#ff5f57;
+  --win:#39d98a;
+  --lose:#ff5f57;
 }
 
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  min-height:100vh;
+  font-family:
+  "Hiragino Sans",
+  "Noto Sans JP",
+  sans-serif;
 }
 
 button,input,select{
   font:inherit;
 }
 
-#login-section{
+#login{
   min-height:100vh;
   display:flex;
   justify-content:center;
@@ -50,29 +52,24 @@ button,input,select{
   max-width:340px;
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:20px;
   padding:2rem;
   text-align:center;
-  box-shadow:var(--shadow);
-}
-
-.login-card h1{
-  margin-bottom:1rem;
 }
 
 .login-btn{
   width:100%;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
   padding:1rem;
   cursor:pointer;
   font-weight:bold;
-  font-size:1rem;
+  margin-top:1rem;
 }
 
 #app{
   display:none;
-  max-width:1000px;
+  max-width:1200px;
   margin:auto;
   padding:1rem;
 }
@@ -81,35 +78,40 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:1rem;
   margin-bottom:1rem;
   flex-wrap:wrap;
+  gap:1rem;
 }
 
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:.7rem;
+.logout-btn{
+  border:none;
+  border-radius:12px;
+  padding:.8rem 1rem;
+  cursor:pointer;
 }
 
 .card{
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:20px;
   padding:1rem;
   margin-bottom:1rem;
-  box-shadow:var(--shadow);
 }
 
-.stats{
+.section-title{
+  margin-bottom:1rem;
+  font-size:1rem;
+}
+
+.stats-grid{
   display:grid;
-  grid-template-columns:repeat(6,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:.8rem;
 }
 
 .stat{
-  background:#141418;
-  border-radius:14px;
+  background:#12141a;
+  border-radius:16px;
   padding:1rem;
   text-align:center;
 }
@@ -137,11 +139,25 @@ header{
 
 .input{
   width:100%;
-  background:#121216;
+  background:#101217;
   border:1px solid var(--border);
   color:white;
   padding:.9rem;
+  border-radius:14px;
+}
+
+.char-row{
+  display:flex;
+  gap:.5rem;
+}
+
+.add-btn{
+  border:none;
   border-radius:12px;
+  background:var(--accent);
+  color:white;
+  padding:0 1rem;
+  cursor:pointer;
 }
 
 .result-buttons{
@@ -153,12 +169,12 @@ header{
 .result-btn{
   flex:1;
   border:none;
-  border-radius:14px;
+  border-radius:16px;
   padding:1rem;
   font-size:1.1rem;
   font-weight:bold;
   cursor:pointer;
-  min-height:56px;
+  min-height:60px;
 }
 
 .win-btn{
@@ -171,40 +187,31 @@ header{
   color:white;
 }
 
-.char-row{
-  display:flex;
-  gap:.5rem;
-}
-
-.add-btn{
+.quick-rematch{
+  width:100%;
   border:none;
-  background:var(--accent);
+  border-radius:14px;
+  background:#2a2d36;
   color:white;
-  padding:0 1rem;
-  border-radius:12px;
+  padding:1rem;
+  margin-top:.8rem;
   cursor:pointer;
 }
 
-.today-box{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:.8rem;
+.chart-wrap{
+  height:250px;
 }
 
-.history-day{
-  border-bottom:1px solid var(--border);
-  padding:1rem 0;
+.table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-.record-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:1rem;
-  padding:.5rem 0;
-  border-bottom:1px solid rgba(255,255,255,.04);
+.table th,
+.table td{
+  padding:.8rem .5rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  text-align:left;
 }
 
 .badge{
@@ -215,35 +222,48 @@ header{
 }
 
 .badge-win{
-  background:rgba(53,208,127,.2);
+  background:rgba(57,217,138,.2);
   color:var(--win);
 }
 
 .badge-lose{
-  background:rgba(255,95,82,.2);
+  background:rgba(255,95,87,.2);
   color:var(--lose);
 }
 
-.chart-wrap{
-  height:240px;
+.history-day{
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:1rem 0;
 }
 
-.logout-btn{
-  border:none;
-  background:#2b2b33;
-  color:white;
-  border-radius:12px;
-  padding:.8rem 1rem;
-  cursor:pointer;
+.record-row{
+  display:flex;
+  justify-content:space-between;
+  gap:1rem;
+  padding:.5rem 0;
 }
 
-@media(max-width:768px){
+.flex-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
 
-  .stats{
+.scroll{
+  overflow-x:auto;
+}
+
+@media(max-width:900px){
+
+  .stats-grid{
     grid-template-columns:repeat(2,1fr);
   }
 
   .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .flex-grid{
     grid-template-columns:1fr;
   }
 
@@ -256,103 +276,148 @@ header{
   }
 
 }
+
 </style>
 </head>
-
 <body>
 
-<div id="login-section">
+<div id="login">
+
   <div class="login-card">
+
     <h1>🎮 スマブラ戦績管理</h1>
+
     <button class="login-btn" id="login-btn">
       Googleでログイン
     </button>
-    <p id="login-status"></p>
+
   </div>
+
 </div>
 
 <div id="app">
 
 <header>
-  <div class="header-left">
-    <h1>🎮 スマブラ戦績</h1>
-  </div>
 
   <div>
-    <span id="user-name"></span>
-    <button class="logout-btn" id="logout-btn">
-      ログアウト
-    </button>
+    <h1>🎮 スマブラ戦績</h1>
+    <div id="user-name"></div>
   </div>
+
+  <button class="logout-btn" id="logout-btn">
+    ログアウト
+  </button>
+
 </header>
 
-<div class="stats">
+<div class="stats-grid">
 
   <div class="stat">
-    <div class="stat-label">総試合</div>
+    <div class="stat-label">総試合数</div>
     <div class="stat-value" id="total-games">0</div>
   </div>
 
   <div class="stat">
-    <div class="stat-label">勝率</div>
-    <div class="stat-value" id="win-rate">0%</div>
+    <div class="stat-label">総合勝率</div>
+    <div class="stat-value" id="overall-rate">0%</div>
   </div>
 
   <div class="stat">
-    <div class="stat-label">今日</div>
+    <div class="stat-label">最近50戦</div>
+    <div class="stat-value" id="recent-rate">0%</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">今日の勝率</div>
     <div class="stat-value" id="today-rate">0%</div>
   </div>
 
   <div class="stat">
-    <div class="stat-label">連勝</div>
-    <div class="stat-value" id="win-streak">0</div>
+    <div class="stat-label">現在連勝</div>
+    <div class="stat-value" id="current-win">0</div>
   </div>
 
   <div class="stat">
-    <div class="stat-label">連敗</div>
-    <div class="stat-value" id="lose-streak">0</div>
+    <div class="stat-label">現在連敗</div>
+    <div class="stat-value" id="current-lose">0</div>
   </div>
 
   <div class="stat">
-    <div class="stat-label">記録数</div>
-    <div class="stat-value" id="record-count">0</div>
+    <div class="stat-label">最大連勝</div>
+    <div class="stat-value" id="max-win">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">最大連敗</div>
+    <div class="stat-value" id="max-lose">0</div>
   </div>
 
 </div>
 
 <div class="card">
 
-  <h2>記録追加</h2>
+  <h2 class="section-title">高速記録</h2>
 
   <div class="form-grid">
 
     <div>
       <label>日付</label>
-      <input class="input" type="date" id="date">
+      <input type="date" class="input" id="date">
     </div>
 
     <div>
+      <label>セッション</label>
+      <input type="text" class="input" id="session" placeholder="夜ランクマ など">
+    </div>
+
+    <div>
+
       <label>自キャラ</label>
 
       <div class="char-row">
+
         <select class="input" id="my-char"></select>
-        <button class="add-btn" id="add-char-btn">＋</button>
+
+        <button class="add-btn" id="add-my-char">
+          ＋
+        </button>
+
       </div>
+
     </div>
 
     <div>
+
       <label>相手キャラ</label>
-      <input class="input" type="text" id="opponent">
+
+      <div class="char-row">
+
+        <select class="input" id="enemy-char"></select>
+
+        <button class="add-btn" id="add-enemy-char">
+          ＋
+        </button>
+
+      </div>
+
     </div>
 
     <div class="full">
+
       <label>メモ</label>
-      <input class="input" type="text" id="memo">
+
+      <input
+      type="text"
+      class="input"
+      id="memo"
+      placeholder="崖弱い、空後通った など">
+
     </div>
 
   </div>
 
   <div class="result-buttons">
+
     <button class="result-btn win-btn" id="win-btn">
       勝ち
     </button>
@@ -360,34 +425,90 @@ header{
     <button class="result-btn lose-btn" id="lose-btn">
       負け
     </button>
+
   </div>
+
+  <button class="quick-rematch" id="rematch-btn">
+    🔁 同条件で再戦記録
+  </button>
 
 </div>
 
 <div class="card">
 
-  <h2>今日の戦績</h2>
-
-  <div class="today-box">
-    <div id="today-text">0勝 0敗</div>
-    <div id="today-winrate">勝率 0%</div>
-  </div>
-
-</div>
-
-<div class="card">
-
-  <h2>勝率推移</h2>
+  <h2 class="section-title">勝率推移</h2>
 
   <div class="chart-wrap">
-    <canvas id="chart"></canvas>
+    <canvas id="main-chart"></canvas>
   </div>
 
 </div>
 
 <div class="card">
 
-  <h2>日付別履歴</h2>
+  <h2 class="section-title">日別勝率</h2>
+
+  <div class="chart-wrap">
+    <canvas id="daily-chart"></canvas>
+  </div>
+
+</div>
+
+<div class="flex-grid">
+
+  <div class="card scroll">
+
+    <h2 class="section-title">キャラ別勝率</h2>
+
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>キャラ</th>
+          <th>勝率</th>
+          <th>使用数</th>
+        </tr>
+      </thead>
+
+      <tbody id="char-stats"></tbody>
+
+    </table>
+
+  </div>
+
+  <div class="card scroll">
+
+    <h2 class="section-title">相手別勝率</h2>
+
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>相手</th>
+          <th>勝率</th>
+          <th>対戦数</th>
+        </tr>
+      </thead>
+
+      <tbody id="enemy-stats"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2 class="section-title">月別統計</h2>
+
+  <div id="monthly-stats"></div>
+
+</div>
+
+<div class="card">
+
+  <h2 class="section-title">履歴</h2>
 
   <div id="history"></div>
 
@@ -399,7 +520,8 @@ header{
 
 import {
   initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
@@ -407,7 +529,8 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getDatabase,
@@ -416,7 +539,8 @@ import {
   onValue,
   set,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+} from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyDRPoPzYLgEQfRo78-9sp8pRtqvwX_HSyw",
@@ -435,33 +559,34 @@ const provider = new GoogleAuthProvider();
 
 let currentUser = null;
 let records = [];
-let characters = [];
-let chart = null;
 
-const loginBtn = document.getElementById("login-btn");
-const logoutBtn = document.getElementById("logout-btn");
+let myCharacters = [];
+let enemyCharacters = [];
 
-const loginSection = document.getElementById("login-section");
-const appSection = document.getElementById("app");
+let mainChart = null;
+let dailyChart = null;
 
-const myCharEl = document.getElementById("my-char");
-const opponentEl = document.getElementById("opponent");
-const memoEl = document.getElementById("memo");
+const login = document.getElementById("login");
+const appEl = document.getElementById("app");
+
 const dateEl = document.getElementById("date");
+const sessionEl = document.getElementById("session");
+const myCharEl = document.getElementById("my-char");
+const enemyCharEl = document.getElementById("enemy-char");
+const memoEl = document.getElementById("memo");
 
-dateEl.value = new Date().toISOString().slice(0,10);
+dateEl.value =
+new Date().toISOString().slice(0,10);
 
-loginBtn.onclick = async()=>{
+document.getElementById("login-btn")
+.onclick = async()=>{
 
-  try{
-    await signInWithPopup(auth,provider);
-  }catch(err){
-    alert(err.message);
-  }
+  await signInWithPopup(auth,provider);
 
 };
 
-logoutBtn.onclick = ()=>signOut(auth);
+document.getElementById("logout-btn")
+.onclick = ()=>signOut(auth);
 
 onAuthStateChanged(auth,user=>{
 
@@ -469,88 +594,110 @@ onAuthStateChanged(auth,user=>{
 
   if(user){
 
-    loginSection.style.display = "none";
-    appSection.style.display = "block";
+    login.style.display = "none";
+    appEl.style.display = "block";
 
-    document.getElementById("user-name").textContent =
-      user.displayName;
+    document.getElementById("user-name")
+    .textContent = user.displayName;
 
-    loadCharacters();
+    loadSettings();
     loadRecords();
 
   }else{
 
-    loginSection.style.display = "flex";
-    appSection.style.display = "none";
+    login.style.display = "flex";
+    appEl.style.display = "none";
 
   }
 
 });
 
-document.getElementById("add-char-btn").onclick = async()=>{
+async function addCharacter(type){
 
   const name = prompt("キャラ名");
 
   if(!name)return;
 
-  characters.push(name);
+  if(type==="my"){
 
-  await set(
-    ref(db,`users/${currentUser.uid}/settings/characters`),
-    characters
-  );
+    myCharacters.push(name);
 
-  renderCharacters();
+    await set(
+      ref(db,
+      `users/${currentUser.uid}/settings/myCharacters`),
+      myCharacters
+    );
 
-};
+  }else{
 
-async function addRecord(result){
+    enemyCharacters.push(name);
 
-  const payload = {
-    date:dateEl.value,
-    myChar:myCharEl.value,
-    opponent:opponentEl.value,
-    memo:memoEl.value,
-    result,
-    createdAt:serverTimestamp()
-  };
+    await set(
+      ref(db,
+      `users/${currentUser.uid}/settings/enemyCharacters`),
+      enemyCharacters
+    );
 
-  await push(
-    ref(db,`users/${currentUser.uid}/records`),
-    payload
-  );
-
-  await set(
-    ref(db,`users/${currentUser.uid}/settings/lastMyChar`),
-    myCharEl.value
-  );
-
-  opponentEl.value = "";
-  memoEl.value = "";
+  }
 
 }
 
-document.getElementById("win-btn").onclick =
-()=>addRecord("win");
+document.getElementById("add-my-char")
+.onclick = ()=>addCharacter("my");
 
-document.getElementById("lose-btn").onclick =
-()=>addRecord("lose");
+document.getElementById("add-enemy-char")
+.onclick = ()=>addCharacter("enemy");
 
-function loadCharacters(){
+function renderCharacterLists(){
+
+  myCharEl.innerHTML = "";
+
+  myCharacters.forEach(c=>{
+
+    const op = document.createElement("option");
+
+    op.value = c;
+    op.textContent = c;
+
+    myCharEl.appendChild(op);
+
+  });
+
+  enemyCharEl.innerHTML =
+  `<option value="">選択</option>`;
+
+  enemyCharacters.forEach(c=>{
+
+    const op = document.createElement("option");
+
+    op.value = c;
+    op.textContent = c;
+
+    enemyCharEl.appendChild(op);
+
+  });
+
+}
+
+function loadSettings(){
 
   onValue(
-    ref(db,`users/${currentUser.uid}/settings`),
+    ref(db,
+    `users/${currentUser.uid}/settings`),
+
     snap=>{
 
       const data = snap.val() || {};
 
-      characters = data.characters || [
-        "マリオ",
-        "クラウド",
-        "ピカチュウ"
-      ];
+      myCharacters =
+      data.myCharacters ||
+      ["マリオ","クラウド"];
 
-      renderCharacters();
+      enemyCharacters =
+      data.enemyCharacters ||
+      ["ピカチュウ","スティーブ"];
+
+      renderCharacterLists();
 
       if(data.lastMyChar){
         myCharEl.value = data.lastMyChar;
@@ -561,26 +708,73 @@ function loadCharacters(){
 
 }
 
-function renderCharacters(){
+async function addRecord(result){
 
-  myCharEl.innerHTML = "";
+  const payload = {
 
-  characters.forEach(c=>{
+    date:dateEl.value,
 
-    const option = document.createElement("option");
-    option.value = c;
-    option.textContent = c;
+    session:
+    sessionEl.value.trim(),
 
-    myCharEl.appendChild(option);
+    myChar:
+    myCharEl.value,
 
-  });
+    enemyChar:
+    enemyCharEl.value,
+
+    memo:
+    memoEl.value.trim(),
+
+    result,
+
+    createdAt:
+    serverTimestamp()
+
+  };
+
+  await push(
+    ref(db,
+    `users/${currentUser.uid}/records`),
+    payload
+  );
+
+  await set(
+    ref(db,
+    `users/${currentUser.uid}/settings/lastMyChar`),
+    myCharEl.value
+  );
+
+  enemyCharEl.value = "";
+  memoEl.value = "";
 
 }
+
+document.getElementById("win-btn")
+.onclick = ()=>addRecord("win");
+
+document.getElementById("lose-btn")
+.onclick = ()=>addRecord("lose");
+
+document.getElementById("rematch-btn")
+.onclick = async()=>{
+
+  if(!records.length)return;
+
+  const last =
+  [...records]
+  .sort((a,b)=>b.createdAt-a.createdAt)[0];
+
+  await addRecord(last.result);
+
+};
 
 function loadRecords(){
 
   onValue(
-    ref(db,`users/${currentUser.uid}/records`),
+    ref(db,
+    `users/${currentUser.uid}/records`),
+
     snap=>{
 
       records = [];
@@ -595,15 +789,24 @@ function loadRecords(){
       });
 
       records.sort((a,b)=>
-        a.createdAt - b.createdAt
-      );
+      a.createdAt-b.createdAt);
 
-      renderStats();
-      renderChart();
-      renderHistory();
+      renderAll();
 
     }
   );
+
+}
+
+function renderAll(){
+
+  renderStats();
+  renderMainChart();
+  renderDailyChart();
+  renderCharacterStats();
+  renderEnemyStats();
+  renderMonthly();
+  renderHistory();
 
 }
 
@@ -611,50 +814,55 @@ function renderStats(){
 
   const total = records.length;
 
-  const wins = records.filter(r=>
-    r.result==="win"
-  ).length;
+  const wins =
+  records.filter(r=>
+  r.result==="win").length;
 
   const rate =
-    total ?
-    Math.round(wins/total*100) :
-    0;
+  total ?
+  Math.round(wins/total*100)
+  :0;
 
   document.getElementById("total-games")
-    .textContent = total;
+  .textContent = total;
 
-  document.getElementById("record-count")
-    .textContent = total;
+  document.getElementById("overall-rate")
+  .textContent = rate+"%";
 
-  document.getElementById("win-rate")
-    .textContent = rate+"%";
+  const recent =
+  records.slice(-50);
+
+  const recentWins =
+  recent.filter(r=>
+  r.result==="win").length;
+
+  const recentRate =
+  recent.length ?
+  Math.round(recentWins/recent.length*100)
+  :0;
+
+  document.getElementById("recent-rate")
+  .textContent = recentRate+"%";
 
   const today =
-    new Date().toISOString().slice(0,10);
+  new Date().toISOString().slice(0,10);
 
   const todayRecords =
-    records.filter(r=>r.date===today);
+  records.filter(r=>
+  r.date===today);
 
   const todayWins =
-    todayRecords.filter(r=>
-      r.result==="win"
-    ).length;
+  todayRecords.filter(r=>
+  r.result==="win").length;
 
   const todayRate =
-    todayRecords.length ?
-    Math.round(todayWins/todayRecords.length*100)
-    :0;
+  todayRecords.length ?
+  Math.round(
+  todayWins/todayRecords.length*100)
+  :0;
 
   document.getElementById("today-rate")
-    .textContent = todayRate+"%";
-
-  document.getElementById("today-text")
-    .textContent =
-    `${todayWins}勝 ${todayRecords.length-todayWins}敗`;
-
-  document.getElementById("today-winrate")
-    .textContent =
-    `勝率 ${todayRate}%`;
+  .textContent = todayRate+"%";
 
   calculateStreaks();
 
@@ -662,15 +870,22 @@ function renderStats(){
 
 function calculateStreaks(){
 
-  let winStreak = 0;
-  let loseStreak = 0;
+  let currentWin = 0;
+  let currentLose = 0;
 
-  const reversed = [...records].reverse();
+  let maxWin = 0;
+  let maxLose = 0;
+
+  let tempWin = 0;
+  let tempLose = 0;
+
+  const reversed =
+  [...records].reverse();
 
   for(const r of reversed){
 
     if(r.result==="win"){
-      winStreak++;
+      currentWin++;
     }else{
       break;
     }
@@ -680,29 +895,55 @@ function calculateStreaks(){
   for(const r of reversed){
 
     if(r.result==="lose"){
-      loseStreak++;
+      currentLose++;
     }else{
       break;
     }
 
   }
 
-  document.getElementById("win-streak")
-    .textContent = winStreak;
+  records.forEach(r=>{
 
-  document.getElementById("lose-streak")
-    .textContent = loseStreak;
+    if(r.result==="win"){
+
+      tempWin++;
+      tempLose = 0;
+
+    }else{
+
+      tempLose++;
+      tempWin = 0;
+
+    }
+
+    if(tempWin > maxWin)
+    maxWin = tempWin;
+
+    if(tempLose > maxLose)
+    maxLose = tempLose;
+
+  });
+
+  document.getElementById("current-win")
+  .textContent = currentWin;
+
+  document.getElementById("current-lose")
+  .textContent = currentLose;
+
+  document.getElementById("max-win")
+  .textContent = maxWin;
+
+  document.getElementById("max-lose")
+  .textContent = maxLose;
 
 }
 
-function renderChart(){
+function renderMainChart(){
 
   const ctx =
-    document.getElementById("chart");
+  document.getElementById("main-chart");
 
-  if(chart){
-    chart.destroy();
-  }
+  if(mainChart)mainChart.destroy();
 
   let wins = 0;
 
@@ -711,34 +952,44 @@ function renderChart(){
 
   records.forEach((r,i)=>{
 
-    if(r.result==="win"){
-      wins++;
-    }
+    if(r.result==="win")wins++;
 
     labels.push(i+1);
 
     data.push(
-      Math.round(wins/(i+1)*100)
-    );
+    Math.round(
+    wins/(i+1)*100));
 
   });
 
-  chart = new Chart(ctx,{
+  mainChart =
+  new Chart(ctx,{
+
     type:"line",
 
     data:{
+
       labels,
 
       datasets:[{
+
         data,
-        borderColor:"#ff5f52",
-        backgroundColor:"rgba(255,95,82,.1)",
+
+        borderColor:"#ff5f57",
+
+        backgroundColor:
+        "rgba(255,95,87,.1)",
+
         fill:true,
+
         tension:.3
+
       }]
+
     },
 
     options:{
+
       responsive:true,
       maintainAspectRatio:false,
 
@@ -754,7 +1005,251 @@ function renderChart(){
           max:100
         }
       }
+
     }
+
+  });
+
+}
+
+function renderDailyChart(){
+
+  const ctx =
+  document.getElementById("daily-chart");
+
+  if(dailyChart)dailyChart.destroy();
+
+  const grouped = {};
+
+  records.forEach(r=>{
+
+    if(!grouped[r.date]){
+
+      grouped[r.date] = {
+        total:0,
+        wins:0
+      };
+
+    }
+
+    grouped[r.date].total++;
+
+    if(r.result==="win")
+    grouped[r.date].wins++;
+
+  });
+
+  const labels =
+  Object.keys(grouped).sort();
+
+  const data =
+  labels.map(d=>
+
+    Math.round(
+    grouped[d].wins/
+    grouped[d].total*100)
+
+  );
+
+  dailyChart =
+  new Chart(ctx,{
+
+    type:"bar",
+
+    data:{
+
+      labels,
+
+      datasets:[{
+
+        data,
+
+        backgroundColor:
+        "#39d98a"
+
+      }]
+
+    },
+
+    options:{
+
+      responsive:true,
+      maintainAspectRatio:false,
+
+      plugins:{
+        legend:{
+          display:false
+        }
+      },
+
+      scales:{
+        y:{
+          min:0,
+          max:100
+        }
+      }
+
+    }
+
+  });
+
+}
+
+function renderCharacterStats(){
+
+  const tbody =
+  document.getElementById("char-stats");
+
+  tbody.innerHTML = "";
+
+  const stats = {};
+
+  records.forEach(r=>{
+
+    if(!stats[r.myChar]){
+
+      stats[r.myChar] = {
+        total:0,
+        wins:0
+      };
+
+    }
+
+    stats[r.myChar].total++;
+
+    if(r.result==="win")
+    stats[r.myChar].wins++;
+
+  });
+
+  Object.entries(stats)
+  .sort((a,b)=>
+  b[1].total-a[1].total)
+
+  .forEach(([char,s])=>{
+
+    const tr =
+    document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${char}</td>
+      <td>
+      ${Math.round(
+      s.wins/s.total*100)}%
+      </td>
+      <td>${s.total}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+function renderEnemyStats(){
+
+  const tbody =
+  document.getElementById("enemy-stats");
+
+  tbody.innerHTML = "";
+
+  const stats = {};
+
+  records.forEach(r=>{
+
+    if(!r.enemyChar)return;
+
+    if(!stats[r.enemyChar]){
+
+      stats[r.enemyChar] = {
+        total:0,
+        wins:0
+      };
+
+    }
+
+    stats[r.enemyChar].total++;
+
+    if(r.result==="win")
+    stats[r.enemyChar].wins++;
+
+  });
+
+  Object.entries(stats)
+  .sort((a,b)=>
+  b[1].total-a[1].total)
+
+  .forEach(([char,s])=>{
+
+    const tr =
+    document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${char}</td>
+      <td>
+      ${Math.round(
+      s.wins/s.total*100)}%
+      </td>
+      <td>${s.total}</td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+function renderMonthly(){
+
+  const el =
+  document.getElementById("monthly-stats");
+
+  el.innerHTML = "";
+
+  const grouped = {};
+
+  records.forEach(r=>{
+
+    const month =
+    r.date.slice(0,7);
+
+    if(!grouped[month]){
+
+      grouped[month] = {
+        total:0,
+        wins:0
+      };
+
+    }
+
+    grouped[month].total++;
+
+    if(r.result==="win")
+    grouped[month].wins++;
+
+  });
+
+  Object.entries(grouped)
+  .sort((a,b)=>b[0].localeCompare(a[0]))
+
+  .forEach(([month,s])=>{
+
+    const div =
+    document.createElement("div");
+
+    div.style.padding = ".7rem 0";
+
+    div.innerHTML = `
+      ${month}
+      :
+      ${s.total}戦
+      /
+      勝率
+      ${Math.round(
+      s.wins/s.total*100)}%
+    `;
+
+    el.appendChild(div);
 
   });
 
@@ -763,7 +1258,7 @@ function renderChart(){
 function renderHistory(){
 
   const history =
-    document.getElementById("history");
+  document.getElementById("history");
 
   history.innerHTML = "";
 
@@ -772,7 +1267,9 @@ function renderHistory(){
   records.forEach(r=>{
 
     if(!grouped[r.date]){
+
       grouped[r.date] = [];
+
     }
 
     grouped[r.date].push(r);
@@ -780,60 +1277,77 @@ function renderHistory(){
   });
 
   Object.keys(grouped)
-    .sort((a,b)=>b.localeCompare(a))
-    .forEach(date=>{
+  .sort((a,b)=>b.localeCompare(a))
 
-      const dayRecords = grouped[date];
+  .forEach(date=>{
 
-      const wins =
-        dayRecords.filter(r=>
-          r.result==="win"
-        ).length;
+    const wrap =
+    document.createElement("div");
 
-      const wrap =
-        document.createElement("div");
+    wrap.className = "history-day";
 
-      wrap.className = "history-day";
+    const dayRecords =
+    grouped[date];
 
-      wrap.innerHTML = `
-        <h3>
-          ${date}
-          (${wins}勝 ${dayRecords.length-wins}敗)
-        </h3>
+    const wins =
+    dayRecords.filter(r=>
+    r.result==="win").length;
+
+    wrap.innerHTML = `
+      <h3>
+      ${date}
+      (${wins}勝
+      ${dayRecords.length-wins}敗)
+      </h3>
+    `;
+
+    dayRecords.reverse()
+    .forEach(r=>{
+
+      const row =
+      document.createElement("div");
+
+      row.className = "record-row";
+
+      row.innerHTML = `
+        <div>
+
+          <div>
+            ${r.myChar}
+            vs
+            ${r.enemyChar || "?"}
+          </div>
+
+          <div
+          style="
+          color:#8e96a3;
+          font-size:.85rem">
+
+            ${r.session || ""}
+            ${r.memo || ""}
+
+          </div>
+
+        </div>
+
+        <div class="
+        badge
+        badge-${r.result}">
+
+          ${r.result==="win"
+          ? "勝"
+          : "負"}
+
+        </div>
       `;
 
-      dayRecords.reverse().forEach(r=>{
-
-        const item =
-          document.createElement("div");
-
-        item.className = "record-item";
-
-        item.innerHTML = `
-          <div>
-            <div>
-              ${r.myChar || "—"}
-              vs
-              ${r.opponent || "—"}
-            </div>
-
-            <div style="font-size:.8rem;color:#999">
-              ${r.memo || ""}
-            </div>
-          </div>
-
-          <div class="badge badge-${r.result}">
-            ${r.result==="win" ? "勝" : "負"}
-          </div>
-        `;
-
-        wrap.appendChild(item);
-
-      });
-
-      history.appendChild(wrap);
+      wrap.appendChild(row);
 
     });
+
+    history.appendChild(wrap);
+
+  });
 
 }
 
