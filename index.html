@@ -126,11 +126,13 @@ canvas{
 <div class="container">
 
 <div class="card" id="loginCard">
+
   <h2>Googleログイン</h2>
 
   <button class="google" onclick="login()">
     Googleでログイン
   </button>
+
 </div>
 
 <div id="app" style="display:none;">
@@ -177,7 +179,7 @@ canvas{
   <h2>総合戦績</h2>
 
   <div class="stat" id="totalStats">
-    0勝0敗
+    0勝 0敗
   </div>
 
   <div class="stat" id="winRate">
@@ -220,7 +222,8 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-  getAuth,
+  initializeAuth,
+  browserLocalPersistence,
   GoogleAuthProvider,
   signInWithRedirect,
   signOut,
@@ -248,7 +251,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence
+});
 
 const db = getDatabase(app);
 
@@ -422,9 +427,7 @@ function renderHistory(){
 
     div.innerHTML = `
       <div>
-        ${m.myChar}
-        vs
-        ${m.enemyChar}
+        ${m.myChar} vs ${m.enemyChar}
       </div>
 
       <div>
@@ -481,7 +484,6 @@ function renderChart(){
 
     data:{
       labels:labels,
-
       datasets:[{
         label:"勝率推移",
         data:cumulative
