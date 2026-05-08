@@ -1,333 +1,843 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>スマブラ戦績管理</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --c-bg:      #0f0f11;
-      --c-surface: #1a1a1f;
-      --c-border:  #2a2a32;
-      --c-accent:  #e8463a;
-      --c-accent2: #f5a623;
-      --c-text:    #e8e8ee;
-      --c-muted:   #666;
-      --c-win:     #3dd68c;
-      --c-lose:    #e8463a;
-      --radius:    10px;
-      --shadow:    0 4px 24px rgba(0,0,0,.5);
-    }
-    body { font-family: "Hiragino Sans","Noto Sans JP",sans-serif; background:var(--c-bg); color:var(--c-text); min-height:100vh; font-size:14px; }
-    #login-section { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
-    .login-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:18px; padding:3rem 2.5rem; text-align:center; box-shadow:var(--shadow); max-width:340px; width:90%; }
-    .login-card .logo { font-size:3rem; margin-bottom:.5rem; }
-    .login-card h1 { font-size:1.3rem; font-weight:700; margin-bottom:.4rem; }
-    .login-card p { color:var(--c-muted); font-size:.85rem; margin-bottom:1.8rem; }
-    .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.2rem; border-radius:8px; border:none; cursor:pointer; font-size:.9rem; font-weight:600; transition:opacity .15s,transform .1s; }
-    .btn:active { transform:scale(.97); }
-    .btn-google { background:#fff; color:#333; width:100%; justify-content:center; padding:.75rem; font-size:1rem; }
-    .btn-google img { width:20px; }
-    .btn-accent { background:var(--c-accent); color:#fff; }
-    .btn-ghost { background:transparent; color:var(--c-muted); border:1px solid var(--c-border); }
-    .btn:hover { opacity:.85; }
-    .btn:disabled { opacity:.5; cursor:not-allowed; }
-    #app-section { display:none; max-width:900px; margin:0 auto; padding:1rem; }
-    header { display:flex; align-items:center; justify-content:space-between; padding:.8rem 0 1.2rem; border-bottom:1px solid var(--c-border); margin-bottom:1.5rem; flex-wrap:wrap; gap:.5rem; }
-    .header-left { display:flex; align-items:center; gap:.7rem; }
-    .header-left h1 { font-size:1.1rem; font-weight:700; }
-    .user-info { display:flex; align-items:center; gap:.8rem; color:var(--c-muted); font-size:.85rem; }
-    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.75rem; margin-bottom:1.5rem; }
-    @media(max-width:500px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
-    .stat-card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); padding:1rem; text-align:center; }
-    .stat-card .label { font-size:.75rem; color:var(--c-muted); margin-bottom:.3rem; }
-    .stat-card .value { font-size:1.8rem; font-weight:800; }
-    .stat-card.highlight .value { color:var(--c-accent2); }
-    .card { background:var(--c-surface); border:1px solid var(--c-border); border-radius:var(--radius); padding:1.2rem; margin-bottom:1.2rem; }
-    .card h2 { font-size:.95rem; font-weight:700; margin-bottom:1rem; }
-    .form-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.7rem; margin-bottom:.8rem; }
-    .form-group { display:flex; flex-direction:column; gap:.3rem; }
-    .form-group label { font-size:.75rem; color:var(--c-muted); }
-    .form-group input,.form-group select { background:var(--c-bg); border:1px solid var(--c-border); border-radius:6px; color:var(--c-text); padding:.5rem .7rem; font-size:.9rem; width:100%; }
-    .form-group input:focus,.form-group select:focus { outline:none; border-color:var(--c-accent); }
-    .full-col { grid-column:1/-1; }
-    .chart-wrap { height:220px; position:relative; }
-    .table-wrap { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; }
-    th,td { padding:.6rem .7rem; text-align:left; border-bottom:1px solid var(--c-border); white-space:nowrap; }
-    th { font-size:.75rem; color:var(--c-muted); font-weight:600; }
-    td { font-size:.85rem; }
-    tr:hover td { background:rgba(255,255,255,.03); }
-    .memo-cell { white-space:normal; max-width:180px; font-size:.8rem; color:var(--c-muted); }
-    .badge { display:inline-block; padding:.15rem .55rem; border-radius:20px; font-size:.8rem; font-weight:700; }
-    .badge-win  { background:rgba(61,214,140,.18); color:var(--c-win); }
-    .badge-lose { background:rgba(232,70,58,.18);  color:var(--c-lose); }
-    .del-btn { background:none; border:none; cursor:pointer; font-size:1rem; opacity:.4; transition:opacity .15s; }
-    .del-btn:hover { opacity:1; }
-    .status-msg { font-size:.8rem; margin-top:.5rem; min-height:1.2em; }
-    .status-msg.ok    { color:var(--c-win); }
-    .status-msg.error { color:var(--c-lose); }
-    .status-msg.info  { color:var(--c-accent2); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>スマブラ戦績管理</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#0f0f11;
+  --card:#1b1b20;
+  --border:#2c2c35;
+  --text:#f2f2f2;
+  --muted:#999;
+  --accent:#ff5f52;
+  --win:#35d07f;
+  --lose:#ff5f52;
+  --shadow:0 4px 20px rgba(0,0,0,.45);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+  min-height:100vh;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+#login-section{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:1rem;
+}
+
+.login-card{
+  width:100%;
+  max-width:340px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:2rem;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+
+.login-card h1{
+  margin-bottom:1rem;
+}
+
+.login-btn{
+  width:100%;
+  border:none;
+  border-radius:12px;
+  padding:1rem;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:1rem;
+}
+
+#app{
+  display:none;
+  max-width:1000px;
+  margin:auto;
+  padding:1rem;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  margin-bottom:1rem;
+  flex-wrap:wrap;
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:1rem;
+  margin-bottom:1rem;
+  box-shadow:var(--shadow);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:.8rem;
+}
+
+.stat{
+  background:#141418;
+  border-radius:14px;
+  padding:1rem;
+  text-align:center;
+}
+
+.stat-label{
+  font-size:.8rem;
+  color:var(--muted);
+  margin-bottom:.4rem;
+}
+
+.stat-value{
+  font-size:1.5rem;
+  font-weight:bold;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.8rem;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+.input{
+  width:100%;
+  background:#121216;
+  border:1px solid var(--border);
+  color:white;
+  padding:.9rem;
+  border-radius:12px;
+}
+
+.result-buttons{
+  display:flex;
+  gap:.8rem;
+  margin-top:1rem;
+}
+
+.result-btn{
+  flex:1;
+  border:none;
+  border-radius:14px;
+  padding:1rem;
+  font-size:1.1rem;
+  font-weight:bold;
+  cursor:pointer;
+  min-height:56px;
+}
+
+.win-btn{
+  background:var(--win);
+  color:black;
+}
+
+.lose-btn{
+  background:var(--lose);
+  color:white;
+}
+
+.char-row{
+  display:flex;
+  gap:.5rem;
+}
+
+.add-btn{
+  border:none;
+  background:var(--accent);
+  color:white;
+  padding:0 1rem;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+.today-box{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:.8rem;
+}
+
+.history-day{
+  border-bottom:1px solid var(--border);
+  padding:1rem 0;
+}
+
+.record-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding:.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+
+.badge{
+  padding:.2rem .7rem;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:bold;
+}
+
+.badge-win{
+  background:rgba(53,208,127,.2);
+  color:var(--win);
+}
+
+.badge-lose{
+  background:rgba(255,95,82,.2);
+  color:var(--lose);
+}
+
+.chart-wrap{
+  height:240px;
+}
+
+.logout-btn{
+  border:none;
+  background:#2b2b33;
+  color:white;
+  border-radius:12px;
+  padding:.8rem 1rem;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .stat-value{
+    font-size:1.3rem;
+  }
+
+  body{
+    font-size:16px;
+  }
+
+}
+</style>
 </head>
+
 <body>
 
 <div id="login-section">
   <div class="login-card">
-    <div class="logo">🎮</div>
-    <h1>スマブラ戦績管理</h1>
-    <p>Googleアカウントでログインして<br>戦績をクラウド管理しよう</p>
-    <button class="btn btn-google" id="login-btn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+    <h1>🎮 スマブラ戦績管理</h1>
+    <button class="login-btn" id="login-btn">
       Googleでログイン
     </button>
-    <p id="login-status" class="status-msg"></p>
+    <p id="login-status"></p>
   </div>
 </div>
 
-<div id="app-section">
-  <header>
-    <div class="header-left">
-      <span>🎮</span>
-      <h1>スマブラ戦績</h1>
-    </div>
-    <div class="user-info">
-      <span id="user-name"></span>
-      <button class="btn btn-ghost" id="logout-btn">ログアウト</button>
-    </div>
-  </header>
-  <div class="stats-grid">
-    <div class="stat-card highlight"><div class="label">勝率</div><div class="value" id="win-rate">—</div></div>
-    <div class="stat-card"><div class="label">総試合数</div><div class="value" id="total-games">0</div></div>
-    <div class="stat-card"><div class="label">勝ち</div><div class="value" id="wins" style="color:var(--c-win)">0</div></div>
-    <div class="stat-card"><div class="label">負け</div><div class="value" id="losses" style="color:var(--c-lose)">0</div></div>
+<div id="app">
+
+<header>
+  <div class="header-left">
+    <h1>🎮 スマブラ戦績</h1>
   </div>
-  <div class="card">
-    <h2>📈 勝率推移</h2>
-    <div class="chart-wrap"><canvas id="win-chart"></canvas></div>
+
+  <div>
+    <span id="user-name"></span>
+    <button class="logout-btn" id="logout-btn">
+      ログアウト
+    </button>
   </div>
-  <div class="card">
-    <h2>＋ 記録を追加</h2>
-    <form id="record-form">
-      <div class="form-grid">
-        <div class="form-group"><label>日付 *</label><input type="date" id="f-date" required /></div>
-        <div class="form-group"><label>自キャラ</label><input type="text" id="f-mychar" placeholder="マリオ など" /></div>
-        <div class="form-group"><label>相手キャラ</label><input type="text" id="f-opponent" placeholder="ピカチュウ など" /></div>
-        <div class="form-group"><label>結果 *</label>
-          <select id="f-result" required>
-            <option value="">選択…</option>
-            <option value="win">勝ち</option>
-            <option value="lose">負け</option>
-          </select>
-        </div>
-        <div class="form-group full-col"><label>メモ</label><input type="text" id="f-memo" placeholder="気づいたこと・反省点など" /></div>
+</header>
+
+<div class="stats">
+
+  <div class="stat">
+    <div class="stat-label">総試合</div>
+    <div class="stat-value" id="total-games">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">勝率</div>
+    <div class="stat-value" id="win-rate">0%</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">今日</div>
+    <div class="stat-value" id="today-rate">0%</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">連勝</div>
+    <div class="stat-value" id="win-streak">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">連敗</div>
+    <div class="stat-value" id="lose-streak">0</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-label">記録数</div>
+    <div class="stat-value" id="record-count">0</div>
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>記録追加</h2>
+
+  <div class="form-grid">
+
+    <div>
+      <label>日付</label>
+      <input class="input" type="date" id="date">
+    </div>
+
+    <div>
+      <label>自キャラ</label>
+
+      <div class="char-row">
+        <select class="input" id="my-char"></select>
+        <button class="add-btn" id="add-char-btn">＋</button>
       </div>
-      <button type="submit" class="btn btn-accent">記録する</button>
-      <p id="form-status" class="status-msg"></p>
-    </form>
-  </div>
-  <div class="card">
-    <h2>📋 戦績一覧（新しい順）</h2>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>日付</th><th>自キャラ</th><th>相手</th><th>結果</th><th>メモ</th><th></th></tr></thead>
-        <tbody id="records-tbody"></tbody>
-      </table>
     </div>
+
+    <div>
+      <label>相手キャラ</label>
+      <input class="input" type="text" id="opponent">
+    </div>
+
+    <div class="full">
+      <label>メモ</label>
+      <input class="input" type="text" id="memo">
+    </div>
+
   </div>
+
+  <div class="result-buttons">
+    <button class="result-btn win-btn" id="win-btn">
+      勝ち
+    </button>
+
+    <button class="result-btn lose-btn" id="lose-btn">
+      負け
+    </button>
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>今日の戦績</h2>
+
+  <div class="today-box">
+    <div id="today-text">0勝 0敗</div>
+    <div id="today-winrate">勝率 0%</div>
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>勝率推移</h2>
+
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>日付別履歴</h2>
+
+  <div id="history"></div>
+
+</div>
+
 </div>
 
 <script type="module">
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, push, onValue, remove, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey:            "AIzaSyDRPoPzYLgEQfRo78-9sp8pRtqvwX_HSyw",
-    authDomain:        "smash-5a24b.firebaseapp.com",
-    databaseURL:       "https://smash-5a24b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId:         "smash-5a24b",
-    storageBucket:     "smash-5a24b.firebasestorage.app",
-    messagingSenderId: "113588232501",
-    appId:             "1:113588232501:web:a36b32f7f3f6b67b06ac7c"
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  push,
+  onValue,
+  set,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDRPoPzYLgEQfRo78-9sp8pRtqvwX_HSyw",
+  authDomain:"smash-5a24b.firebaseapp.com",
+  databaseURL:"https://smash-5a24b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"smash-5a24b",
+  storageBucket:"smash-5a24b.firebasestorage.app",
+  messagingSenderId:"113588232501",
+  appId:"1:113588232501:web:a36b32f7f3f6b67b06ac7c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let records = [];
+let characters = [];
+let chart = null;
+
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+
+const loginSection = document.getElementById("login-section");
+const appSection = document.getElementById("app");
+
+const myCharEl = document.getElementById("my-char");
+const opponentEl = document.getElementById("opponent");
+const memoEl = document.getElementById("memo");
+const dateEl = document.getElementById("date");
+
+dateEl.value = new Date().toISOString().slice(0,10);
+
+loginBtn.onclick = async()=>{
+
+  try{
+    await signInWithPopup(auth,provider);
+  }catch(err){
+    alert(err.message);
+  }
+
+};
+
+logoutBtn.onclick = ()=>signOut(auth);
+
+onAuthStateChanged(auth,user=>{
+
+  currentUser = user;
+
+  if(user){
+
+    loginSection.style.display = "none";
+    appSection.style.display = "block";
+
+    document.getElementById("user-name").textContent =
+      user.displayName;
+
+    loadCharacters();
+    loadRecords();
+
+  }else{
+
+    loginSection.style.display = "flex";
+    appSection.style.display = "none";
+
+  }
+
+});
+
+document.getElementById("add-char-btn").onclick = async()=>{
+
+  const name = prompt("キャラ名");
+
+  if(!name)return;
+
+  characters.push(name);
+
+  await set(
+    ref(db,`users/${currentUser.uid}/settings/characters`),
+    characters
+  );
+
+  renderCharacters();
+
+};
+
+async function addRecord(result){
+
+  const payload = {
+    date:dateEl.value,
+    myChar:myCharEl.value,
+    opponent:opponentEl.value,
+    memo:memoEl.value,
+    result,
+    createdAt:serverTimestamp()
   };
 
-  const app      = initializeApp(firebaseConfig);
-  const auth     = getAuth(app);
-  const db       = getDatabase(app);
-  const provider = new GoogleAuthProvider();
+  await push(
+    ref(db,`users/${currentUser.uid}/records`),
+    payload
+  );
 
-  let currentUser = null;
-  let records     = [];
-  let chart       = null;
-  let dbUnsub     = null;
+  await set(
+    ref(db,`users/${currentUser.uid}/settings/lastMyChar`),
+    myCharEl.value
+  );
 
-  // ── 要素取得（body末尾にscriptがあるのでDOMは確定済み）──
-  const loginSection = document.getElementById("login-section");
-  const appSection   = document.getElementById("app-section");
-  const loginBtn     = document.getElementById("login-btn");
-  const logoutBtn    = document.getElementById("logout-btn");
-  const userNameEl   = document.getElementById("user-name");
-  const recordForm   = document.getElementById("record-form");
-  const tbody        = document.getElementById("records-tbody");
-  const winRateEl    = document.getElementById("win-rate");
-  const totalEl      = document.getElementById("total-games");
-  const winsEl       = document.getElementById("wins");
-  const lossesEl     = document.getElementById("losses");
-  const loginStatus  = document.getElementById("login-status");
-  const formStatus   = document.getElementById("form-status");
-  const fDate        = document.getElementById("f-date");
+  opponentEl.value = "";
+  memoEl.value = "";
 
-  fDate.value = new Date().toISOString().slice(0, 10);
+}
 
-  // ── ログイン ──
-  loginBtn.addEventListener("click", async () => {
-    loginStatus.textContent = "ログイン中…";
-    loginStatus.className   = "status-msg info";
-    loginBtn.disabled       = true;
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      console.error(err);
-      loginStatus.textContent = "ログインエラー: " + err.message;
-      loginStatus.className   = "status-msg error";
-      loginBtn.disabled       = false;
+document.getElementById("win-btn").onclick =
+()=>addRecord("win");
+
+document.getElementById("lose-btn").onclick =
+()=>addRecord("lose");
+
+function loadCharacters(){
+
+  onValue(
+    ref(db,`users/${currentUser.uid}/settings`),
+    snap=>{
+
+      const data = snap.val() || {};
+
+      characters = data.characters || [
+        "マリオ",
+        "クラウド",
+        "ピカチュウ"
+      ];
+
+      renderCharacters();
+
+      if(data.lastMyChar){
+        myCharEl.value = data.lastMyChar;
+      }
+
     }
+  );
+
+}
+
+function renderCharacters(){
+
+  myCharEl.innerHTML = "";
+
+  characters.forEach(c=>{
+
+    const option = document.createElement("option");
+    option.value = c;
+    option.textContent = c;
+
+    myCharEl.appendChild(option);
+
   });
 
-  logoutBtn.addEventListener("click", async () => {
-    if (dbUnsub) { dbUnsub(); dbUnsub = null; }
-    await signOut(auth);
-  });
+}
 
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-      loginSection.style.display = "none";
-      appSection.style.display   = "block";
-      userNameEl.textContent     = user.displayName || user.email;
-      startListening();
-    } else {
-      loginSection.style.display = "flex";
-      appSection.style.display   = "none";
-      loginBtn.disabled          = false;
-      loginStatus.textContent    = "";
+function loadRecords(){
+
+  onValue(
+    ref(db,`users/${currentUser.uid}/records`),
+    snap=>{
+
       records = [];
-    }
-  });
 
-  // ── 記録追加 ──
-  recordForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!currentUser) return;
-    const payload = {
-      date:      fDate.value,
-      myChar:    document.getElementById("f-mychar").value.trim(),
-      opponent:  document.getElementById("f-opponent").value.trim(),
-      result:    document.getElementById("f-result").value,
-      memo:      document.getElementById("f-memo").value.trim(),
-      createdAt: serverTimestamp()
-    };
-    if (!payload.date || !payload.result) return;
-    try {
-      await push(ref(db, `users/${currentUser.uid}/records`), payload);
-      recordForm.reset();
-      fDate.value = new Date().toISOString().slice(0, 10);
-      formStatus.textContent = "記録しました ✓";
-      formStatus.className   = "status-msg ok";
-      setTimeout(() => { formStatus.textContent = ""; }, 2000);
-    } catch (err) {
-      formStatus.textContent = "保存エラー: " + err.message;
-      formStatus.className   = "status-msg error";
-    }
-  });
+      snap.forEach(child=>{
 
-  // ── DB リアルタイムリスナー ──
-  function startListening() {
-    if (dbUnsub) dbUnsub();
-    dbUnsub = onValue(ref(db, `users/${currentUser.uid}/records`), (snap) => {
-      records = [];
-      snap.forEach(child => records.push({ id: child.key, ...child.val() }));
-      records.sort((a, b) => a.date > b.date ? 1 : -1);
-      renderStats();
-      renderTable();
-      renderChart();
-    });
-  }
+        records.push({
+          id:child.key,
+          ...child.val()
+        });
 
-  function renderStats() {
-    const wins  = records.filter(r => r.result === "win").length;
-    const total = records.length;
-    winRateEl.textContent = total ? Math.round(wins / total * 100) + "%" : "—";
-    totalEl.textContent   = total;
-    winsEl.textContent    = wins;
-    lossesEl.textContent  = total - wins;
-  }
-
-  function renderTable() {
-    tbody.innerHTML = "";
-    if (!records.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--c-muted);padding:2rem">まだ記録がありません</td></tr>`;
-      return;
-    }
-    [...records].reverse().forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${r.date}</td>
-        <td>${r.myChar || "—"}</td>
-        <td>${r.opponent || "—"}</td>
-        <td><span class="badge badge-${r.result}">${r.result === "win" ? "勝" : "負"}</span></td>
-        <td class="memo-cell">${r.memo || ""}</td>
-        <td><button class="del-btn" data-id="${r.id}">🗑</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-    tbody.querySelectorAll(".del-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        if (!confirm("削除しますか？")) return;
-        await remove(ref(db, `users/${currentUser.uid}/records/${btn.dataset.id}`));
       });
-    });
+
+      records.sort((a,b)=>
+        a.createdAt - b.createdAt
+      );
+
+      renderStats();
+      renderChart();
+      renderHistory();
+
+    }
+  );
+
+}
+
+function renderStats(){
+
+  const total = records.length;
+
+  const wins = records.filter(r=>
+    r.result==="win"
+  ).length;
+
+  const rate =
+    total ?
+    Math.round(wins/total*100) :
+    0;
+
+  document.getElementById("total-games")
+    .textContent = total;
+
+  document.getElementById("record-count")
+    .textContent = total;
+
+  document.getElementById("win-rate")
+    .textContent = rate+"%";
+
+  const today =
+    new Date().toISOString().slice(0,10);
+
+  const todayRecords =
+    records.filter(r=>r.date===today);
+
+  const todayWins =
+    todayRecords.filter(r=>
+      r.result==="win"
+    ).length;
+
+  const todayRate =
+    todayRecords.length ?
+    Math.round(todayWins/todayRecords.length*100)
+    :0;
+
+  document.getElementById("today-rate")
+    .textContent = todayRate+"%";
+
+  document.getElementById("today-text")
+    .textContent =
+    `${todayWins}勝 ${todayRecords.length-todayWins}敗`;
+
+  document.getElementById("today-winrate")
+    .textContent =
+    `勝率 ${todayRate}%`;
+
+  calculateStreaks();
+
+}
+
+function calculateStreaks(){
+
+  let winStreak = 0;
+  let loseStreak = 0;
+
+  const reversed = [...records].reverse();
+
+  for(const r of reversed){
+
+    if(r.result==="win"){
+      winStreak++;
+    }else{
+      break;
+    }
+
   }
 
-  function renderChart() {
-    const canvas = document.getElementById("win-chart");
-    if (!canvas) return;
-    if (chart) { chart.destroy(); chart = null; }
-    if (!records.length) return;
-    let wins = 0;
-    const labels = [], data = [];
-    records.forEach((r, i) => {
-      if (r.result === "win") wins++;
-      labels.push(`#${i + 1}`);
-      data.push(Math.round(wins / (i + 1) * 100));
-    });
-    chart = new Chart(canvas.getContext("2d"), {
-      type: "line",
-      data: {
-        labels,
-        datasets: [{
-          label: "累積勝率 (%)", data,
-          borderColor: "#e8463a", backgroundColor: "rgba(232,70,58,0.12)",
-          tension: 0.35, fill: true,
-          pointRadius: records.length > 50 ? 0 : 4, pointHoverRadius: 6
-        }]
+  for(const r of reversed){
+
+    if(r.result==="lose"){
+      loseStreak++;
+    }else{
+      break;
+    }
+
+  }
+
+  document.getElementById("win-streak")
+    .textContent = winStreak;
+
+  document.getElementById("lose-streak")
+    .textContent = loseStreak;
+
+}
+
+function renderChart(){
+
+  const ctx =
+    document.getElementById("chart");
+
+  if(chart){
+    chart.destroy();
+  }
+
+  let wins = 0;
+
+  const labels = [];
+  const data = [];
+
+  records.forEach((r,i)=>{
+
+    if(r.result==="win"){
+      wins++;
+    }
+
+    labels.push(i+1);
+
+    data.push(
+      Math.round(wins/(i+1)*100)
+    );
+
+  });
+
+  chart = new Chart(ctx,{
+    type:"line",
+
+    data:{
+      labels,
+
+      datasets:[{
+        data,
+        borderColor:"#ff5f52",
+        backgroundColor:"rgba(255,95,82,.1)",
+        fill:true,
+        tension:.3
+      }]
+    },
+
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+
+      plugins:{
+        legend:{
+          display:false
+        }
       },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { min:0, max:100, ticks:{color:"#aaa", callback:v=>v+"%"}, grid:{color:"rgba(255,255,255,0.06)"} },
-          x: { ticks:{color:"#aaa", maxTicksLimit:12}, grid:{color:"rgba(255,255,255,0.06)"} }
+
+      scales:{
+        y:{
+          min:0,
+          max:100
         }
       }
+    }
+
+  });
+
+}
+
+function renderHistory(){
+
+  const history =
+    document.getElementById("history");
+
+  history.innerHTML = "";
+
+  const grouped = {};
+
+  records.forEach(r=>{
+
+    if(!grouped[r.date]){
+      grouped[r.date] = [];
+    }
+
+    grouped[r.date].push(r);
+
+  });
+
+  Object.keys(grouped)
+    .sort((a,b)=>b.localeCompare(a))
+    .forEach(date=>{
+
+      const dayRecords = grouped[date];
+
+      const wins =
+        dayRecords.filter(r=>
+          r.result==="win"
+        ).length;
+
+      const wrap =
+        document.createElement("div");
+
+      wrap.className = "history-day";
+
+      wrap.innerHTML = `
+        <h3>
+          ${date}
+          (${wins}勝 ${dayRecords.length-wins}敗)
+        </h3>
+      `;
+
+      dayRecords.reverse().forEach(r=>{
+
+        const item =
+          document.createElement("div");
+
+        item.className = "record-item";
+
+        item.innerHTML = `
+          <div>
+            <div>
+              ${r.myChar || "—"}
+              vs
+              ${r.opponent || "—"}
+            </div>
+
+            <div style="font-size:.8rem;color:#999">
+              ${r.memo || ""}
+            </div>
+          </div>
+
+          <div class="badge badge-${r.result}">
+            ${r.result==="win" ? "勝" : "負"}
+          </div>
+        `;
+
+        wrap.appendChild(item);
+
+      });
+
+      history.appendChild(wrap);
+
     });
-  }
+
+}
+
 </script>
+
 </body>
 </html>
