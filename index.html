@@ -240,7 +240,8 @@ header{
   display:flex;
   justify-content:space-between;
   gap:1rem;
-  padding:.5rem 0;
+  padding:.7rem 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
 }
 
 .flex-grid{
@@ -251,6 +252,16 @@ header{
 
 .scroll{
   overflow-x:auto;
+}
+
+.delete-btn{
+  background:#ff5f57;
+  border:none;
+  color:white;
+  border-radius:10px;
+  padding:.45rem .7rem;
+  cursor:pointer;
+  font-size:.8rem;
 }
 
 @media(max-width:900px){
@@ -385,11 +396,7 @@ header{
 
       <label>相手キャラ</label>
 
-      <div class="char-row">
-
-        <select class="input" id="enemy-char"></select>
-
-      </div>
+      <select class="input" id="enemy-char"></select>
 
     </div>
 
@@ -530,6 +537,7 @@ import {
   push,
   onValue,
   set,
+  remove,
   serverTimestamp
 } from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -1323,6 +1331,7 @@ function renderHistory(){
       row.className = "record-row";
 
       row.innerHTML = `
+
         <div>
 
           <div>
@@ -1342,15 +1351,32 @@ function renderHistory(){
 
         </div>
 
-        <div class="
-        badge
-        badge-${r.result}">
+        <div
+        style="
+        display:flex;
+        align-items:center;
+        gap:.6rem;">
 
-          ${r.result==="win"
-          ? "勝"
-          : "負"}
+          <div class="
+          badge
+          badge-${r.result}">
+
+            ${r.result==="win"
+            ? "勝"
+            : "負"}
+
+          </div>
+
+          <button
+          class="delete-btn"
+          data-id="${r.id}">
+
+            削除
+
+          </button>
 
         </div>
+
       `;
 
       wrap.appendChild(row);
@@ -1358,6 +1384,28 @@ function renderHistory(){
     });
 
     history.appendChild(wrap);
+
+  });
+
+  document
+  .querySelectorAll(".delete-btn")
+  .forEach(btn=>{
+
+    btn.onclick = async()=>{
+
+      const ok =
+      confirm("この記録を削除しますか？");
+
+      if(!ok)return;
+
+      await remove(
+        ref(
+          db,
+          `users/${currentUser.uid}/records/${btn.dataset.id}`
+        )
+      );
+
+    };
 
   });
 
